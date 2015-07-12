@@ -11,7 +11,7 @@ Influenced by QML, with flavor of Jade and Sass
   import {title, largeFont} from "./styles";
   console.log("init...");
 
-<export Counter>
+<Counter>
   t.section
     @id root
     clickCount: 0
@@ -29,4 +29,9 @@ Influenced by QML, with flavor of Jade and Sass
         ++root.clicked;
 
     t.p `${root.clickCount} times clicked`
+
+    @init
+
+.
+  export default Counter;
 ```
