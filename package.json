@@ -13,8 +13,7 @@
     "chai": "^3.0.0",
     "gulp": "^3.9.0",
     "gulp-shell": "^0.4.2",
-    "mocha": "^2.2.5",
-    "pegjs": "^0.8.0"
+    "mocha": "^2.2.5"
   },
   "directories": {
     "doc": "doc",
