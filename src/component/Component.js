@@ -1,3 +1,5 @@
+import {EventEmitter} from "events";
+
 const sConnections = Symbol("connections");
 
 class Connection {
@@ -22,22 +24,53 @@ export default
 class Component extends EventEmitter {
 
   constructor() {
+    super();
     this[sConnections] = new Set();
-    this.emit("init");
+    this.link();
+    this.load();
+    this.init();
   }
 
-  dispose() {
-    this.emit("deinit");
+  // connect events and properties
+  link() {
+
+  }
+
+  // load actual UI component (e.g. DOM)
+  load() {
+
+  }
+
+  // general init
+  init() {
+
+  }
+
+  // general deinit
+  deinit() {
+
+  }
+
+  // unload actual UI component
+  unload() {
+
+  }
+
+  // disconnect events and properties
+  unlink() {
     for (const c of Array.from(this[sConnections])) {
       c.dispose();
     }
   }
 
-  on(...args) {
-    if (args.length === 2) {
-      return super.on(...args);
-    }
-    new Connection(this, ...args);
+  dispose() {
+    this.deinit();
+    this.unload();
+    this.unlink();
+  }
+
+  connect(eventName, receiver, action) {
+    new Connection(this, eventName, receiver, action);
   }
 
   static property(name) {
