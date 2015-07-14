@@ -5,6 +5,9 @@
   }
 }
 
+Start
+  = Lines
+
 Whitespace
   = [ \t]
 
@@ -12,9 +15,6 @@ Linebreak
   = "\r\n"
   / "\n"
   / "\r"
-
-Start
-  = Lines
 
 Lines
   = lines:(BlankLine / Line)*
@@ -30,7 +30,10 @@ Children
 
 // TODO
 LineContent
-  = [a-zA-Z0-9]*
+  = chars:(!Linebreak c:. { return  c; })*
+{
+  return chars.join("");
+}
 
 Line
   = IndentKeep content:LineContent Linebreak children:Children?
@@ -55,13 +58,15 @@ IndentKeep
   }
 
 IndentDown
-  = whites:Whitespace+
-  & {
-    return whites.length > lastIndent();
-  }
-  {
-    context.indentStack.push(whites.length);
-  }
+  = &(
+    whites:Whitespace+
+    & {
+      return whites.length > lastIndent();
+    }
+    {
+      indentStack.push(whites.length);
+    }
+  )
 
 IndentUp =
   {
