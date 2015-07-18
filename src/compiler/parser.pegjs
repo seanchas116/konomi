@@ -92,6 +92,12 @@ RawText
     return chars.join("");
   }
 
+ElementExpr
+  = !"@" chars:NonLinebreak*
+  {
+    return chars.join("");
+  }
+
 PropertyLine
   = IndentKeep name:Identifier ":" _ expr:(RawBlock / RawText)
   {
@@ -111,7 +117,7 @@ IdLine
   }
 
 ElementLine
-  = IndentKeep expr:RawText Linebreak children: Children?
+  = IndentKeep expr:ElementExpr Linebreak children: Children?
   {
     return {
       type: "element",
