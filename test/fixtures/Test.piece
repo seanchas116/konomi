@@ -1,10 +1,17 @@
 const Component = require("../../src/component/Component");
 
+function getTitle() {
+  return "foobar";
+}
+
 <Test>
   Component
     @id root
     Component
       @id sub
-    prop: "foobar"
+    prop: getTitle()
+    longProp:.
+      const bar = "bar";
+      return "foo" + bar;
 
 module.exports = Test;
