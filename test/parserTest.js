@@ -3,7 +3,7 @@ const path = require("path");
 const {assert} = require("chai");
 const parser = require("../src/compiler/parser");
 
-const testFile = fs.readFileSync(path.join(__dirname, "fixtures/Test.piece"), {encoding: "utf8"});
+const testFile = fs.readFileSync(path.join(__dirname, "fixtures/TodoList.piece"), {encoding: "utf8"});
 
 describe("parse", () => {
   it("parses", () => {
