@@ -6,10 +6,9 @@ Declarative object tree construction system for JavaScript, mainly for UI progra
 Influenced by QML, with flavor of Jade and Sass
 
 ```js
-.
-  import * as t from "mosaicpiece/dom";
-  import {title, largeFont} from "./styles";
-  console.log("init...");
+import * as t from "mosaicpiece/dom";
+import {title, largeFont} from "./styles";
+console.log("init...");
 
 <Counter>
   t.section
@@ -32,6 +31,5 @@ Influenced by QML, with flavor of Jade and Sass
 
     @init
 
-.
-  export default Counter;
+export default Counter;
 ```

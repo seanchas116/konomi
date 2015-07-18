@@ -6,7 +6,7 @@
 }
 
 Start
-  = Lines
+  = (BlankLine / DefinitionLine / RawLine)*
 
 Whitespace
   = [ \t]
@@ -16,11 +16,23 @@ Linebreak
   / "\n"
   / "\r"
 
-Lines
-  = lines:(BlankLine / Line)*
+NonLinebreak
+  = !Linebreak c:.
   {
-    return lines.filter(c => c != null);
+    return c;
   }
+
+_
+  = ws:Whitespace*
+
+Identifier
+  = chars:[a-zA-Z_]+ _
+  {
+    return chars.join("");
+  }
+
+Lines
+  = (BlankLine / PropertyLine / IdLine / ElementLine)*
 
 Children
   = BlankLine* IndentDown children:Lines IndentUp
@@ -28,31 +40,96 @@ Children
     return children;
   }
 
-// TODO
-LineContent
-  = chars:(!Linebreak c:. { return  c; })*
+DefinitionName
+  = "<" _ name:Identifier ">" _
 {
-  return chars.join("");
+  console.log("definition name");
+  return name;
 }
 
-Line
-  = IndentKeep content:LineContent Linebreak children:Children?
+DefinitionLine
+  = IndentKeep name:DefinitionName Linebreak children:Children?
   {
     return {
-      type: "line",
+      type: "definition",
+      name: name,
+      children: children
+    }
+  }
+
+RawLine
+  = IndentKeep content:RawText Linebreak children:RawChildren?
+  {
+    return {
+      type: "raw",
       content: content,
       children: children || []
     };
   }
 
-BlankLine
-  = Whitespace* Linebreak
+RawLines
+  = lines:(BlankLine / RawLine)*
   {
-    return null;
+    return lines;
+  }
+
+RawChildren
+  = BlankLine* IndentDown children:RawLines IndentUp
+  {
+    return children;
+  }
+
+RawBlock
+  = "." _ Linebreak children:RawChildren
+  {
+    return children;
+  }
+
+RawText
+  = chars:NonLinebreak*
+  {
+    return chars.join("");
+  }
+
+PropertyLine
+  = IndentKeep name:Identifier ":" _ expr:(RawBlock / RawText)
+  {
+    return {
+      type: "property",
+      expr: expr
+    };
+  }
+
+IdLine
+  = IndentKeep "@id" _ name:Identifier Linebreak
+  {
+    return {
+      type: "id",
+      name: name
+    };
+  }
+
+ElementLine
+  = IndentKeep expr:RawText Linebreak children: Children?
+  {
+    return {
+      type: "element",
+      expr: expr,
+      children: children || []
+    };
+  }
+
+BlankLine
+  = ws:_ Linebreak
+  {
+    return {
+      type: "blank",
+      raw: ws.join("")
+    };
   }
 
 IndentKeep
-  = whites:Whitespace*
+  = whites:_
   & {
     return whites.length === lastIndent();
   }

@@ -7,8 +7,16 @@ const testFile = fs.readFileSync(path.join(__dirname, "fixtures/Test.piece"), {e
 
 describe("parse", () => {
   it("parses", () => {
-    const parsed = parser.parse(testFile);
-    console.log(JSON.stringify(parsed, null, 2));
-    assert(typeof parsed === "object");
+    try {
+      const parsed = parser.parse(testFile);
+      console.log(JSON.stringify(parsed, null, 2));
+      assert(typeof parsed === "object");
+    } catch (e) {
+      if (e instanceof parser.SyntaxError) {
+        throw new Error(`Syntax error at ${e.line}:${e.column}: ${e.message}`);
+      } else {
+        throw e;
+      }
+    }
   });
 });

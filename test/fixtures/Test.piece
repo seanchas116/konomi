@@ -1,5 +1,4 @@
-.
-  const Component = require("../../src/component/Component");
+const Component = require("../../src/component/Component");
 
 <Test>
   Component
@@ -8,5 +7,4 @@
       @id sub
     prop: "foobar"
 
-.
-  module.exports = Test;
+module.exports = Test;
