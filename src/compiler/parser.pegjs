@@ -39,12 +39,12 @@ DefinitionName
 }
 
 DefinitionLine
-  = IndentKeep name:DefinitionName Linebreak children:Children?
+  = IndentKeep name:DefinitionName Linebreak children:Children
   {
     return {
       type: "definition",
-      name: name,
-      children: children
+      name,
+      children
     }
   }
 
@@ -99,14 +99,14 @@ IdDirective
   }
 
 RepeatDirective
-  = "repeat" _ name:Identifier key:("with" _ key:Identifier { return key; })? "of" _ expr:RawText Linebreak children: Children?
+  = "repeat" _ name:Identifier key:("with" _ key:Identifier { return key; })? "of" _ expr:RawText Linebreak children: Children
   {
     return {
       type: "repeat",
       key,
       name,
       expr,
-      children: children || []
+      children
     };
   }
 
@@ -115,7 +115,7 @@ PropertyLine
   {
     return {
       type: "property",
-      expr: expr
+      expr
     };
   }
 
@@ -126,12 +126,12 @@ DirectiveLine
   }
 
 ElementLine
-  = IndentKeep expr:ElementExpr Linebreak children: Children?
+  = IndentKeep expr:ElementExpr Linebreak children: Children
   {
     return {
       type: "element",
-      expr: expr,
-      children: children || []
+      expr,
+      children
     };
   }
 
@@ -139,9 +139,9 @@ Lines
   = (BlankLine / PropertyLine / DirectiveLine / ElementLine)*
 
 Children
-  = BlankLine* IndentDown children:Lines IndentUp
+  = children:(BlankLine* IndentDown children:Lines IndentUp { return children; })?
   {
-    return children;
+    return children || [];
   }
 
 BlankLine
