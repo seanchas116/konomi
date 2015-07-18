@@ -32,7 +32,7 @@ Identifier
   }
 
 Lines
-  = (BlankLine / PropertyLine / IdLine / ElementLine)*
+  = (BlankLine / PropertyLine / IdLine / RepeatLine / ElementLine)*
 
 Children
   = BlankLine* IndentDown children:Lines IndentUp
@@ -113,6 +113,18 @@ IdLine
     return {
       type: "id",
       name: name
+    };
+  }
+
+RepeatLine
+  = IndentKeep "@repeat" _ name:Identifier key:("with" _ key:Identifier { return key; })? "of" _ expr:RawText Linebreak children: Children?
+  {
+    return {
+      type: "repeat",
+      key,
+      name,
+      expr,
+      children: children || []
     };
   }
 

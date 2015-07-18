@@ -12,7 +12,7 @@ const Component = require("../../src/component/Component");
     @id todoList
     todos: []
 
-    @repeat todo with todo.id of todoList.todos
+    @repeat todo with id of todoList.todos
       Todo
         title: todo.title
         description: todo.description
