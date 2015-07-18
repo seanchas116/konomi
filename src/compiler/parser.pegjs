@@ -63,6 +63,7 @@ RawLine
     return {
       type: "raw",
       content: content,
+      indent: lastIndent(),
       children: children || []
     };
   }

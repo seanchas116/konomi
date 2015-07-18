@@ -75,6 +75,7 @@ module.exports = (function() {
             return {
               type: "raw",
               content: content,
+              indent: lastIndent(),
               children: children || []
             };
           },
