@@ -51,18 +51,13 @@ RawLine
   = IndentKeep content:RawText Linebreak children:RawChildren
   {
     return {
-      type: "raw",
-      indent: lastIndent(),
-      content,
-      children
+      type: "blockText",
+      content: lastIndent() + content.content + children.map(c => c.content).join("")
     };
   }
 
 RawLines
-  = lines:(BlankLine / RawLine)*
-  {
-    return lines;
-  }
+  = (BlankLine / RawLine)*
 
 RawChildren
   = children:(BlankLine* IndentDown children:RawLines IndentUp { return children; })?
@@ -71,15 +66,21 @@ RawChildren
   }
 
 RawBlock
-  = "." _ Linebreak children:RawChildren
+  = "." _ Linebreak content:RawChildren
   {
-    return children;
+    return {
+      type: "blockText",
+      content
+    };
   }
 
 RawText
   = chars:NonLinebreak*
   {
-    return chars.join("");
+    return {
+      type: "text",
+      content: chars.join("")
+    };
   }
 
 TrailingRaw
@@ -207,7 +208,7 @@ BlankLine
   {
     return {
       type: "blank",
-      raw: ws.join("")
+      content: ws.join("")
     };
   }
 
