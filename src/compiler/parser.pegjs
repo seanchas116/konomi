@@ -57,20 +57,14 @@ DefinitionLine
     }
   }
 
-RawIndent
-  = &(
-    whites:Whitespace*
-    & {
-      return whites.length >= lastIndent();
-    }
-  )
-
 RawLine
-  = RawIndent text:RawText Linebreak
+  = IndentKeep content:RawText Linebreak children:RawChildren?
   {
     return {
       type: "raw",
-      raw: text
+      content: content,
+      indent: lastIndent(),
+      children: children || []
     };
   }
 
@@ -83,10 +77,7 @@ RawLines
 RawChildren
   = BlankLine* IndentDown children:RawLines IndentUp
   {
-    return {
-      type: "raw",
-      raw: children.map(c => c.raw).join("\n")
-    };
+    return children;
   }
 
 RawBlock
