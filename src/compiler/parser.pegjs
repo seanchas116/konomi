@@ -49,13 +49,13 @@ DefinitionLine
   }
 
 RawLine
-  = IndentKeep content:RawText Linebreak children:RawChildren?
+  = IndentKeep content:RawText Linebreak children:RawChildren
   {
     return {
       type: "raw",
-      content: content,
       indent: lastIndent(),
-      children: children || []
+      content,
+      children
     };
   }
 
@@ -66,9 +66,9 @@ RawLines
   }
 
 RawChildren
-  = BlankLine* IndentDown children:RawLines IndentUp
+  = children:(BlankLine* IndentDown children:RawLines IndentUp { return children; })?
   {
-    return children;
+    return children || [];
   }
 
 RawBlock
