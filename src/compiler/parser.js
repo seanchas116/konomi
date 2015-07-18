@@ -139,13 +139,13 @@ module.exports = (function() {
             };
           },
         peg$c49 = function(whites) {
-            return whites.length === lastIndent();
+            return whites.join("").length === lastIndent().length;
           },
         peg$c50 = function(whites) {
-              return whites.length > lastIndent();
+              return whites.join("").length > lastIndent().length;
             },
         peg$c51 = function(whites) {
-              indentStack.push(whites.length);
+              indentStack.push(whites.join(""));
             },
         peg$c52 = function() {
             indentStack.pop();
@@ -1247,7 +1247,7 @@ module.exports = (function() {
     }
 
 
-      const indentStack = [0];
+      const indentStack = [""];
       function lastIndent() {
         return indentStack[indentStack.length - 1];
       }

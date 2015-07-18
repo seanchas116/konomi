@@ -1,5 +1,5 @@
 {
-  const indentStack = [0];
+  const indentStack = [""];
   function lastIndent() {
     return indentStack[indentStack.length - 1];
   }
@@ -157,17 +157,17 @@ BlankLine
 IndentKeep
   = whites:_
   & {
-    return whites.length === lastIndent();
+    return whites.join("").length === lastIndent().length;
   }
 
 IndentDown
   = &(
     whites:Whitespace+
     & {
-      return whites.length > lastIndent();
+      return whites.join("").length > lastIndent().length;
     }
     {
-      indentStack.push(whites.length);
+      indentStack.push(whites.join(""));
     }
   )
 
