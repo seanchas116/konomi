@@ -31,15 +31,6 @@ Identifier
     return chars.join("");
   }
 
-Lines
-  = (BlankLine / PropertyLine / IdLine / RepeatLine / ElementLine)*
-
-Children
-  = BlankLine* IndentDown children:Lines IndentUp
-  {
-    return children;
-  }
-
 DefinitionName
   = "<" _ name:Identifier ">" _
 {
@@ -98,6 +89,27 @@ ElementExpr
     return chars.join("");
   }
 
+IdDirective
+  = "id" _ name:Identifier Linebreak
+  {
+    return {
+      type: "id",
+      name: name
+    };
+  }
+
+RepeatDirective
+  = "repeat" _ name:Identifier key:("with" _ key:Identifier { return key; })? "of" _ expr:RawText Linebreak children: Children?
+  {
+    return {
+      type: "repeat",
+      key,
+      name,
+      expr,
+      children: children || []
+    };
+  }
+
 PropertyLine
   = IndentKeep name:Identifier ":" _ expr:(RawBlock / RawText)
   {
@@ -107,25 +119,10 @@ PropertyLine
     };
   }
 
-IdLine
-  = IndentKeep "@id" _ name:Identifier Linebreak
+DirectiveLine
+  = IndentKeep "@" directive:(IdDirective / RepeatDirective)
   {
-    return {
-      type: "id",
-      name: name
-    };
-  }
-
-RepeatLine
-  = IndentKeep "@repeat" _ name:Identifier key:("with" _ key:Identifier { return key; })? "of" _ expr:RawText Linebreak children: Children?
-  {
-    return {
-      type: "repeat",
-      key,
-      name,
-      expr,
-      children: children || []
-    };
+    return directive;
   }
 
 ElementLine
@@ -138,6 +135,15 @@ ElementLine
     };
   }
 
+Lines
+  = (BlankLine / PropertyLine / DirectiveLine / ElementLine)*
+
+Children
+  = BlankLine* IndentDown children:Lines IndentUp
+  {
+    return children;
+  }
+
 BlankLine
   = ws:_ Linebreak
   {
@@ -146,6 +152,7 @@ BlankLine
       raw: ws.join("")
     };
   }
+
 
 IndentKeep
   = whites:_
