@@ -27,7 +27,13 @@ const Component = require("../../src/component/Component");
         todoList.todos = todoList.todos.concat([todo]);
       }
 
-    @on "click".
+    @on click.
       console.log "clicked"
+
+    @init.
+      console.log "init";
+
+    @deinit.
+      console.log "deinit";
 
 module.exports = TodoList;

@@ -82,6 +82,9 @@ RawText
     return chars.join("");
   }
 
+TrailingRaw
+  = RawBlock / RawText
+
 ElementExpr
   = !"@" chars:NonLinebreak*
   {
@@ -109,8 +112,55 @@ RepeatDirective
     };
   }
 
+IfDirective
+  = "if" _ expr:RawText Linebreak children: Children
+  {
+    return {
+      type: "if",
+      expr,
+      children
+    };
+  }
+
+MethodsDirective
+  = "methods" _ expr:RawBlock
+  {
+    return {
+      type: "methods",
+      expr
+    };
+  }
+
+OnDirective
+  = "on" _ name:Identifier expr:TrailingRaw
+  {
+    return {
+      type: "on",
+      name,
+      expr
+    };
+  }
+
+InitDirective
+  = "init" _ expr:TrailingRaw
+  {
+    return {
+      type: "init",
+      expr
+    };
+  }
+
+DeinitDirective
+  = "deinit" _ expr:TrailingRaw
+  {
+    return {
+      type: "deinit",
+      expr
+    };
+  }
+
 PropertyLine
-  = IndentKeep name:Identifier ":" _ expr:(RawBlock / RawText)
+  = IndentKeep name:Identifier ":" _ expr:TrailingRaw
   {
     return {
       type: "property",
@@ -118,8 +168,17 @@ PropertyLine
     };
   }
 
+Directive
+  = IdDirective
+  / RepeatDirective
+  / IfDirective
+  / MethodsDirective
+  / OnDirective
+  / InitDirective
+  / DeinitDirective
+
 DirectiveLine
-  = IndentKeep "@" directive:(IdDirective / RepeatDirective)
+  = IndentKeep "@" directive:Directive
   {
     return directive;
   }
