@@ -57,7 +57,6 @@ module.exports = (function() {
         peg$c18 = ">",
         peg$c19 = { type: "literal", value: ">", description: "\">\"" },
         peg$c20 = function(name) {
-          console.log("definition name");
           return name;
         },
         peg$c21 = function(name, children) {

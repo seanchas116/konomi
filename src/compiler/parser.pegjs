@@ -34,7 +34,6 @@ Identifier
 DefinitionName
   = "<" _ name:Identifier ">" _
 {
-  console.log("definition name");
   return name;
 }
 
