@@ -6,28 +6,29 @@ Declarative object tree construction system for JavaScript, mainly for UI progra
 Influenced by QML, with flavor of Jade and Sass
 
 ```js
-import * as t from "mosaicpiece/dom";
+import Element from "ui-element";
 import {title, largeFont} from "./styles";
-console.log("init...");
 
 <Counter>
-  t.section
+  Element
     @id root
     clickCount: 0
 
     @on "change:clickCount"
       console.log("clickCount changed");
 
-    t.h1 "Super simple counter"
+    Element
       @include title
       @include largeFont
+      text: "Super simple counter"
 
-    t.button
-      "Increment"
+    Element
+      text: "Increment"
       @on "click"
         ++root.clicked;
 
-    t.p `${root.clickCount} times clicked`
+    Element
+      text: `${root.clickCount} times clicked`
 
     @init
       console.log("initializing counter...");
