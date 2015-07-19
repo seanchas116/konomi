@@ -11,6 +11,8 @@ const Component = require("../../src/component/Component");
   Component
     @id todoList
     todos: []
+    title:
+      return "Todo List";
 
     @repeat todo with id of todoList.todos
       Todo
@@ -22,18 +24,18 @@ const Component = require("../../src/component/Component");
       TodoCount
         count: todos.length
 
-    @methods.
+    @methods
       addTodos(todo) {
         todoList.todos = todoList.todos.concat([todo]);
       }
 
-    @on click.
-      console.log "clicked"
+    @on click
+      console.log "clicked";
 
-    @init.
+    @init
       console.log "init";
 
-    @deinit.
+    @deinit
       console.log "deinit";
 
 module.exports = TodoList;

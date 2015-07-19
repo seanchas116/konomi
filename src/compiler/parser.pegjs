@@ -66,7 +66,7 @@ RawChildren
   }
 
 RawBlock
-  = "." _ Linebreak content:RawChildren
+  = Linebreak content:RawChildren
   {
     return {
       type: "blockText",
