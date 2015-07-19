@@ -24,10 +24,8 @@ const Component = require("../../src/component/Component");
       TodoCount
         count: todos.length
 
-    @methods
-      addTodos(todo) {
-        todoList.todos = todoList.todos.concat([todo]);
-      }
+    @method addTodos(todo)
+      todoList.todos = todoList.todos.concat([todo]);
 
     @on click
       console.log "clicked";

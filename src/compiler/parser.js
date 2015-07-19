@@ -124,12 +124,13 @@ module.exports = (function() {
               children
             };
           },
-        peg$c44 = "methods",
-        peg$c45 = { type: "literal", value: "methods", description: "\"methods\"" },
-        peg$c46 = function(expr) {
+        peg$c44 = "method",
+        peg$c45 = { type: "literal", value: "method", description: "\"method\"" },
+        peg$c46 = function(sig, body) {
             return {
-              type: "methods",
-              expr
+              type: "method",
+              sig,
+              body
             };
           },
         peg$c47 = "on",
@@ -1008,13 +1009,13 @@ module.exports = (function() {
       return s0;
     }
 
-    function peg$parseMethodsDirective() {
-      var s0, s1, s2, s3;
+    function peg$parseMethodDirective() {
+      var s0, s1, s2, s3, s4;
 
       s0 = peg$currPos;
-      if (input.substr(peg$currPos, 7) === peg$c44) {
+      if (input.substr(peg$currPos, 6) === peg$c44) {
         s1 = peg$c44;
-        peg$currPos += 7;
+        peg$currPos += 6;
       } else {
         s1 = peg$FAILED;
         if (peg$silentFails === 0) { peg$fail(peg$c45); }
@@ -1022,11 +1023,17 @@ module.exports = (function() {
       if (s1 !== peg$FAILED) {
         s2 = peg$parse_();
         if (s2 !== peg$FAILED) {
-          s3 = peg$parseRawBlock();
+          s3 = peg$parseRawText();
           if (s3 !== peg$FAILED) {
-            peg$reportedPos = s0;
-            s1 = peg$c46(s3);
-            s0 = s1;
+            s4 = peg$parseRawBlock();
+            if (s4 !== peg$FAILED) {
+              peg$reportedPos = s0;
+              s1 = peg$c46(s3, s4);
+              s0 = s1;
+            } else {
+              peg$currPos = s0;
+              s0 = peg$c9;
+            }
           } else {
             peg$currPos = s0;
             s0 = peg$c9;
@@ -1210,7 +1217,7 @@ module.exports = (function() {
         if (s0 === peg$FAILED) {
           s0 = peg$parseIfDirective();
           if (s0 === peg$FAILED) {
-            s0 = peg$parseMethodsDirective();
+            s0 = peg$parseMethodDirective();
             if (s0 === peg$FAILED) {
               s0 = peg$parseOnDirective();
               if (s0 === peg$FAILED) {

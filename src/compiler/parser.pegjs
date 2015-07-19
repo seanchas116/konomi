@@ -123,12 +123,13 @@ IfDirective
     };
   }
 
-MethodsDirective
-  = "methods" _ expr:RawBlock
+MethodDirective
+  = "method" _ sig:RawText body:RawBlock
   {
     return {
-      type: "methods",
-      expr
+      type: "method",
+      sig,
+      body
     };
   }
 
@@ -173,7 +174,7 @@ Directive
   = IdDirective
   / RepeatDirective
   / IfDirective
-  / MethodsDirective
+  / MethodDirective
   / OnDirective
   / InitDirective
   / DeinitDirective
