@@ -15,7 +15,7 @@ console.log("init...");
     @id root
     clickCount: 0
 
-    @on "change:clickCount".
+    @on "change:clickCount"
       console.log("clickCount changed");
 
     t.h1 "Super simple counter"
@@ -24,12 +24,13 @@ console.log("init...");
 
     t.button
       "Increment"
-      @on "click".
+      @on "click"
         ++root.clicked;
 
     t.p `${root.clickCount} times clicked`
 
     @init
+      console.log("initializing counter...");
 
 export default Counter;
 ```
