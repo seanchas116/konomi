@@ -1064,9 +1064,9 @@ module.exports = (function() {
       if (s1 !== peg$FAILED) {
         s2 = peg$parse_();
         if (s2 !== peg$FAILED) {
-          s3 = peg$parseIdentifier();
+          s3 = peg$parseRawText();
           if (s3 !== peg$FAILED) {
-            s4 = peg$parseTrailingRaw();
+            s4 = peg$parseRawBlock();
             if (s4 !== peg$FAILED) {
               peg$reportedPos = s0;
               s1 = peg$c49(s3, s4);
@@ -1105,7 +1105,7 @@ module.exports = (function() {
       if (s1 !== peg$FAILED) {
         s2 = peg$parse_();
         if (s2 !== peg$FAILED) {
-          s3 = peg$parseTrailingRaw();
+          s3 = peg$parseRawBlock();
           if (s3 !== peg$FAILED) {
             peg$reportedPos = s0;
             s1 = peg$c52(s3);
@@ -1140,7 +1140,7 @@ module.exports = (function() {
       if (s1 !== peg$FAILED) {
         s2 = peg$parse_();
         if (s2 !== peg$FAILED) {
-          s3 = peg$parseTrailingRaw();
+          s3 = peg$parseRawBlock();
           if (s3 !== peg$FAILED) {
             peg$reportedPos = s0;
             s1 = peg$c55(s3);

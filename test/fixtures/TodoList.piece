@@ -27,7 +27,7 @@ const Component = require("../../src/component/Component");
     @method addTodos(todo)
       todoList.todos = todoList.todos.concat([todo]);
 
-    @on click
+    @on "click"
       console.log "clicked";
 
     @init

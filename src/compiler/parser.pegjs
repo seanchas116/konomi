@@ -134,7 +134,7 @@ MethodDirective
   }
 
 OnDirective
-  = "on" _ name:Identifier expr:TrailingRaw
+  = "on" _ name:RawText expr:RawBlock
   {
     return {
       type: "on",
@@ -144,7 +144,7 @@ OnDirective
   }
 
 InitDirective
-  = "init" _ expr:TrailingRaw
+  = "init" _ expr:RawBlock
   {
     return {
       type: "init",
@@ -153,7 +153,7 @@ InitDirective
   }
 
 DeinitDirective
-  = "deinit" _ expr:TrailingRaw
+  = "deinit" _ expr:RawBlock
   {
     return {
       type: "deinit",
