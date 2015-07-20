@@ -20,7 +20,7 @@
       return "Todo List";
     }
 
-    @repeat (todo of this.todos) {
+    @repeat (todo with todo.id of this.todos) {
       Todo {
         title: todo.title;
         description: todo.description;

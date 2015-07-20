@@ -1,237 +1,212 @@
-{
-  const indentStack = [""];
-  function lastIndent() {
-    return indentStack[indentStack.length - 1];
-  }
-}
 
 Start
-  = (BlankLine / DefinitionLine / RawLine)*
+  = Root
 
 Whitespace
-  = [ \t]
-
-Linebreak
-  = "\r\n"
-  / "\n"
-  / "\r"
-
-NonLinebreak
-  = !Linebreak c:.
-  {
-    return c;
-  }
+  = [ \t\r\n]
 
 _
-  = ws:Whitespace*
+  = Whitespace*
+
+__
+  = Whitespace+
 
 Identifier
-  = chars:[a-zA-Z_]+ _
+  = chars:[a-zA-Z_]+
   {
-    return chars.join("");
+    return text();
   }
 
-DefinitionName
-  = "<" _ name:Identifier ">" _
-{
-  return name;
-}
-
-DefinitionLine
-  = IndentKeep name:DefinitionName Linebreak children:Children
+// TODO: improve
+JSString
+  = '"' (!'"' .)* '"'
   {
     return {
-      type: "definition",
-      name,
-      children
+      type: "jsExpr",
+      content: text()
     }
   }
 
-RawLine
-  = IndentKeep content:RawText Linebreak children:RawChildren
+JSParensContent
+  = (!")" JSText)*
   {
-    return {
-      type: "blockText",
-      content: lastIndent() + content.content + children.map(c => c.content).join("")
-    };
+    return text();
   }
 
-RawLines
-  = (BlankLine / RawLine)*
-
-RawChildren
-  = children:(BlankLine* IndentDown children:RawLines IndentUp { return children; })?
-  {
-    return children || [];
-  }
-
-RawBlock
-  = Linebreak content:RawChildren
+JSParens
+  = "(" content:JSParensContent ")"
   {
     return {
-      type: "blockText",
+      type: "jsExpr",
       content
     };
   }
 
-RawText
-  = chars:NonLinebreak*
+JSBracesContent
+  = (!"}" JSText)*
+  {
+    return text();
+  }
+
+JSBraces
+  = "{" content:JSBracesContent "}"
   {
     return {
-      type: "text",
-      content: chars.join("")
+      type: "jsBlock",
+      content
     };
   }
 
-TrailingRaw
-  = RawBlock / RawText
+JSText
+  = JSParens / JSBraces / .
 
-ElementExpr
-  = !"@" chars:NonLinebreak*
+JSStatementContent
+  = (!";" JSText)*
   {
-    return chars.join("");
+    return text();
   }
 
-IdDirective
-  = "id" _ name:Identifier Linebreak
+JSStatement
+  = content:JSStatementContent ";"
   {
     return {
-      type: "id",
-      name: name
+      type: "jsExpr",
+      content
     };
   }
 
-RepeatDirective
-  = "repeat" _ name:Identifier key:("with" _ key:Identifier { return key; })? "of" _ expr:RawText Linebreak children: Children
+Property
+  = name:Identifier _ ":" _ expr:(JSBraces / JSStatement) _
   {
     return {
-      type: "repeat",
-      key,
+      type: "property",
       name,
-      expr,
-      children
+      expr
     };
   }
 
 IfDirective
-  = "if" _ expr:RawText Linebreak children: Children
+  = "if" _ expr:JSParens _ members:Members
   {
     return {
       type: "if",
       expr,
-      children
+      members
     };
   }
 
-MethodDirective
-  = "method" _ sig:RawText body:RawBlock
+RepeatWithContent
+  = (!("of" __) JSText)*
+  {
+    return text();
+  }
+
+RepeatWith
+  = "with" __ content:RepeatWithContent
   {
     return {
-      type: "method",
-      sig,
-      body
+      type: "jsExpr",
+      content
+    };
+  }
+
+RepeatOfContent
+  = (!")" JSText)*
+  {
+    return text();
+  }
+
+RepeatOf
+  = "of" __ content:RepeatOfContent
+  {
+    return {
+      type: "jsExpr",
+      content
+    };
+  }
+
+RepeatDirective
+  = "repeat" _ "(" _ name:Identifier __ key:RepeatWith? iterable:RepeatOf _
+  {
+    return {
+      type: "repeat",
+      name,
+      key,
+      iterable
     };
   }
 
 OnDirective
-  = "on" _ name:RawText expr:RawBlock
+  = "on" __ event:JSString _ block:JSBraces _
   {
     return {
       type: "on",
-      name,
-      expr
+      event,
+      block
     };
   }
 
 InitDirective
-  = "init" _ expr:RawBlock
+  = "init" _ block:JSBraces _
   {
     return {
       type: "init",
-      expr
+      block
     };
   }
 
 DeinitDirective
-  = "deinit" _ expr:RawBlock
+  = "deinit" _ block:JSBraces _
   {
     return {
       type: "deinit",
-      expr
-    };
-  }
-
-PropertyLine
-  = IndentKeep name:Identifier ":" _ expr:TrailingRaw
-  {
-    return {
-      type: "property",
-      expr
+      block
     };
   }
 
 Directive
-  = IdDirective
-  / RepeatDirective
-  / IfDirective
-  / MethodDirective
-  / OnDirective
-  / InitDirective
-  / DeinitDirective
+  = "@" (IfDirective / RepeatDirective / OnDirective / InitDirective / DeinitDirective)
 
-DirectiveLine
-  = IndentKeep "@" directive:Directive
+Member
+  = Directive
+  / Property
+  / Component
+
+Members
+  = "{" _ members:Member* "}" _
   {
-    return directive;
+    return members;
   }
 
-ElementLine
-  = IndentKeep expr:ElementExpr Linebreak children: Children
+ComponentName
+  = (!("{" / ";") JSText)*
+  {
+    return text();
+  }
+
+Component
+  = name:ComponentName _ members:Members
   {
     return {
-      type: "element",
-      expr,
-      children
+      type: "component",
+      members
+    }
+  }
+
+ComponentDefinition
+  = "<" _ name:Identifier _ ">" _ "{" _ component:Component _ "}" _
+  {
+    return {
+      type: "componentDefinition",
+      name,
+      component
     };
   }
 
-Lines
-  = (BlankLine / PropertyLine / DirectiveLine / ElementLine)*
-
-Children
-  = children:(BlankLine* IndentDown children:Lines IndentUp { return children; })?
+TopLevelJS
+  = js:JSBraces _
   {
-    return children || [];
+    return js;
   }
 
-BlankLine
-  = ws:_ Linebreak
-  {
-    return {
-      type: "blank",
-      content: ws.join("")
-    };
-  }
-
-
-IndentKeep
-  = whites:_
-  & {
-    return whites.join("").length === lastIndent().length;
-  }
-
-IndentDown
-  = &(
-    whites:Whitespace+
-    & {
-      return whites.join("").length > lastIndent().length;
-    }
-    {
-      indentStack.push(whites.join(""));
-    }
-  )
-
-IndentUp =
-  {
-    indentStack.pop();
-  }
+Root = (TopLevelJS / ComponentDefinition)*
