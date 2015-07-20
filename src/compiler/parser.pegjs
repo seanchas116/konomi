@@ -85,6 +85,15 @@ Property
     };
   }
 
+IdDirective
+  = "id" _ name:Identifier _ ";" _
+  {
+    return {
+      type: "id",
+      name
+    };
+  }
+
 IfDirective
   = "if" _ expr:JSParens _ members:Members
   {
@@ -165,7 +174,7 @@ DeinitDirective
   }
 
 Directive
-  = "@" (IfDirective / RepeatDirective / OnDirective / InitDirective / DeinitDirective)
+  = "@" (IdDirective / IfDirective / RepeatDirective / OnDirective / InitDirective / DeinitDirective)
 
 Member
   = Directive
