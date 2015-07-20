@@ -13,7 +13,8 @@ describe("parse", () => {
       assert(typeof parsed === "object");
     } catch (e) {
       if (e instanceof parser.SyntaxError) {
-        throw new Error(`Syntax error at ${e.line}:${e.column}: ${e.message}`);
+        const {line, column} = e.location.start;
+        throw new Error(`Syntax error at ${line}:${column}: ${e.message}`);
       } else {
         throw e;
       }
