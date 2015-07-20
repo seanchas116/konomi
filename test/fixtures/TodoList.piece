@@ -1,39 +1,57 @@
-const Component = require("../../src/component/Component");
+{
+  import Component from "../../src/component/Component";
+}
 
-<Todo>
-  Component
-    @id todo
-    title: ""
-    description: ""
-    dueDate: new Date()
+<Todo> {
+  Component {
+    @id todo;
+    title: "";
+    description: "";
+    dueDate: new Date();
+  }
+}
 
-<TodoList>
-  Component
-    @id todoList
-    todos: []
-    title:
+<TodoList> {
+  Component {
+    @id root;
+
+    todos: [];
+    title: {
       return "Todo List";
+    }
 
-    @repeat todo with id of todoList.todos
-      Todo
-        title: todo.title
-        description: todo.description
-        dueDate: todo.dueDate
+    @repeat (todo of this.todos) {
+      Todo {
+        title: todo.title;
+        description: todo.description;
+        dueDate: todo.dueDate;
+      }
+    }
 
-    @if todos.length > 0
-      TodoCount
-        count: todos.length
+    @if (todos.length > 0) {
+      Component {
+        text: todos.length;
+      }
+    }
 
-    @method addTodos(todo)
-      todoList.todos = todoList.todos.concat([todo]);
-
-    @on "click"
+    @on "click" {
       console.log "clicked";
+    }
 
-    @init
+    @init {
       console.log "init";
+    }
 
-    @deinit
+    @deinit {
       console.log "deinit";
+    }
 
-module.exports = TodoList;
+    addTodos(todo) {
+      this.todos = this.todos.concat([todo]);
+    }
+  }
+}
+
+{
+  export default TodoList;
+}
