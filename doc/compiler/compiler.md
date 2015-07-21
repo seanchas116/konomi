@@ -19,7 +19,7 @@
       @include largeFont;
 
       @init {
-        console.log("header init");
+        console.log("title init");
       }
     }
 
@@ -35,8 +35,18 @@
       text: `${root.clickCount} times clicked`;
     }
 
+    @repeat (i of _.times(root.clickCount)) {
+      t.p {
+        @id countLabel;
+        text: `${i}`;
+      }
+    }
+
     @init {
       console.log("counter init");
+    }
+    @deinit {
+      console.log("counter deinit");
     }
   }
 }
@@ -46,48 +56,75 @@
 
 ```js
 const Counter = () => {
-  let __env = {};
-
-  // prepare classes
-  class Class_title extends mixin(t.h1, title, largeFont) {
-  }
-
-  class Class_button extends t.button {
-  }
-
-  class Class_count extends t.p {
-  }
+  let root;
+  let title;
+  let button;
+  let count;
 
   class Counter extends t.section {
     link() {
-      const root = this;
-      const title = new Class_title();
-      const button = new Class_button();
-      const count = new Class_count();
-      __env = {root, title, button, count};
+      super.link();
 
-      // add event listeners
-      button.on("clicked", function () {
-        ++root.clicked;
-      }.bind(button));
+      class Class_title extends mixin(t.h1, title, largeFont) {
+        link() {
+          title = this;
+        }
+
+        init() {
+          super.init();
+          console.log("title init");
+        }
+      }
+
+      class Class_button extends t.button {
+        link() {
+          button = this;
+
+          button.on("clicked", function () {
+            ++root.clicked;
+          }.bind(button));
+        }
+      }
+
+      class Class_count extends t.p {
+        link() {
+          count = this;
+
+          count.bindProperty("content", [root, "clickCount"], function () {
+            return `${root.clickCount} times clicked`;
+          }.bind(count));
+        }
+      }
+
+      root = this;
+      new Class_title();
+      new Class_button();
+      new Class_count();
+
       root.on("change:clickCount", function () {
         console.log("clickCount changed");
       }.bind(root));
 
-      // set properties
-      count.bindProperty("content", [root, "clickCount"], function () {
-        return `${root.clickCount} times clicked`;
-      }.bind(count));
-      root.clickCount = 0;
+      root.bindProperty("clickCount", [], function () {
+        return 0;
+      }.bind(root));
 
-      // set children
-      root.children = [title, button, count];
+      Component.observeProperty([], function () {
+        root.children = [title, button, count];
+      });
+
+      root.on("change:children", function () {
+        for (const c in root.children) {
+          c.parent = this;
+        }
+      });
     }
     init() {
       super.init();
       console.log("counter init");
     }
     deinit() {
+      console.log("counter deinit");
       super.deinit();
     }
   }
