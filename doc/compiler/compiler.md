@@ -3,30 +3,43 @@
 ## Input
 
 ```js
-<Counter>
-  t.section
-    @id root
-    clickCount: 0
+<Counter> {
+  t.section {
+    @id root;
+    clickCount: 0;
 
-    @on "change:clickCount".
+    @on "change:clickCount" {
       console.log("clickCount changed");
+    }
 
-    t.h1 "Super simple counter"
-      @id title
-      @include title
-      @include largeFont
+    t.h1 {
+      text: "Super simple counter";
+      @id title;
+      @include title;
+      @include largeFont;
 
-    t.button
-      "Increment"
-      @on "click".
+      @init {
+        console.log("header init");
+      }
+    }
+
+    t.button {
+      text: "Increment";
+      @on "click" {
         ++root.clicked;
+      }
+    }
 
-    t.p
-      @id count
-      `${root.clickCount} times clicked`
+    t.p {
+      @id count;
+      text: `${root.clickCount} times clicked`;
+    }
 
-    @init.
+    @init {
       console.log("counter init");
+    }
+  }
+}
 ```
 
 ## Output
