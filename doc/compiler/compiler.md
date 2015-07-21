@@ -61,15 +61,20 @@ const Counter = () => {
     constructor() {
       super();
 
+      // define scope
+
       let root;
       let title;
       let button;
       let count;
 
+      // define children classes
+
       class Class_title extends mixin(t.h1, title, largeFont) {
         constructor() {
           super();
           title = this;
+
           this.on("init", () => {
             console.log("title init");
           });
@@ -79,11 +84,11 @@ const Counter = () => {
       class Class_button extends t.button {
         constructor() {
           super();
-
           button = this;
-          button.on("clicked", function () {
+
+          this.on("clicked", () => {
             ++root.clicked;
-          }.bind(button));
+          });
         }
       }
 
@@ -92,42 +97,42 @@ const Counter = () => {
           super();
           count = this;
 
-          count.bindProperty("content", [root, "clickCount"], function () {
+          this.bindProperty("content", [root, "clickCount"], () => {
             return `${root.clickCount} times clicked`;
-          }.bind(count));
+          });
         }
       }
       Class_count.property("content");
+
+      // create children //
 
       root = this;
       new Class_title();
       new Class_button();
       new Class_count();
 
-      root.on("change:clickCount", function () {
-        console.log("clickCount changed");
-      }.bind(root));
+      // bind properties //
 
-      root.bindProperty("clickCount", [], function () {
+      this.bindProperty("clickCount", [], () => {
         return 0;
-      }.bind(root));
-
-      Component.observeProperty([], function () {
-        root.children = [title, button, count];
       });
 
-      root.on("change:children", function () {
-        for (const c in root.children) {
-          c.parent = this;
-        }
+      // bind events //
+
+      this.on("change:clickCount", () => {
+        console.log("clickCount changed");
       });
 
-      root.on("init", () => {
+      this.on("init", () => {
         console.log("counter init");
       })
 
-      root.prependListener("deinit", () => {
+      this.prependListener("deinit", () => {
         console.log("counter deinit");
+      });
+
+      Component.observeProperty([], () => {
+        root.children = [title, button, count];
       });
     }
   }

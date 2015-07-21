@@ -26,47 +26,18 @@ class Component extends EventEmitter {
   constructor() {
     super();
     this[sConnections] = new Set();
-    this.link();
-    this.load();
-    this.init();
-  }
 
-  // connect events and properties
-  link() {
-
-  }
-
-  // load actual UI component (e.g. DOM)
-  load() {
-
-  }
-
-  // general init
-  init() {
-
-  }
-
-  // general deinit
-  deinit() {
-
-  }
-
-  // unload actual UI component
-  unload() {
-
-  }
-
-  // disconnect events and properties
-  unlink() {
-    for (const c of Array.from(this[sConnections])) {
-      c.dispose();
-    }
+    this.on("change:children", function () {
+      for (const c in root.children) {
+        c.parent = this;
+      }
+    });
   }
 
   dispose() {
-    this.deinit();
-    this.unload();
-    this.unlink();
+    for (const c of Array.from(this[sConnections])) {
+      c.dispose();
+    }
   }
 
   connect(eventName, receiver, action) {
@@ -99,5 +70,9 @@ class Component extends EventEmitter {
         }
       }
     });
+    return this;
   }
 }
+
+Component.property("children");
+Component.property("parent");
