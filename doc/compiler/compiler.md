@@ -121,7 +121,7 @@ const Counter = () => {
       });
     }
   }
-  Counter.addProperty(Counter.prototype, "clickCount");
+  Component.addProperty(Counter.prototype, "clickCount");
 
   return Counter;
 }
