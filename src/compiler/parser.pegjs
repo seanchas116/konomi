@@ -75,6 +75,17 @@ JSStatement
     };
   }
 
+Method
+  = name:Identifier _ signature:JSParens _ body:JSBraces _
+  {
+    return {
+      type: "method",
+      name,
+      signature,
+      body
+    };
+  }
+
 Property
   = name:Identifier _ ":" _ expr:(JSBraces / JSStatement) _
   {
@@ -135,13 +146,14 @@ RepeatOf
   }
 
 RepeatDirective
-  = "repeat" _ "(" _ name:Identifier __ key:RepeatWith? iterable:RepeatOf _
+  = "repeat" _ "(" _ name:Identifier __ key:RepeatWith? iterable:RepeatOf _ ")" _ members:Members
   {
     return {
       type: "repeat",
       name,
       key,
-      iterable
+      iterable,
+      members
     };
   }
 
@@ -174,12 +186,13 @@ DeinitDirective
   }
 
 Directive
-  = "@" (IdDirective / IfDirective / RepeatDirective / OnDirective / InitDirective / DeinitDirective)
+  = "@" dir:(IdDirective / IfDirective / RepeatDirective / OnDirective / InitDirective / DeinitDirective)
+  {
+    return dir;
+  }
 
 Member
-  = Directive
-  / Property
-  / Component
+  = Directive / Method / Property / Component
 
 Members
   = "{" _ members:Member* "}" _
@@ -188,7 +201,7 @@ Members
   }
 
 ComponentName
-  = (!("{" / ";") JSText)*
+  = Identifier _ ("." _ Identifier _)*
   {
     return text();
   }
