@@ -126,7 +126,7 @@ const Counter = () => {
         console.log("counter init");
       })
 
-      prependEventListener(root, "deinit", () => {
+      root.prependListener("deinit", () => {
         console.log("counter deinit");
       });
     }

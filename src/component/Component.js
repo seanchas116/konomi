@@ -73,6 +73,16 @@ class Component extends EventEmitter {
     new Connection(this, eventName, receiver, action);
   }
 
+  prependListener(event, listener) {
+    const oldListeners = this.listeners(event) || [];
+    this.removeAllListeners(event);
+    const ret = this.on(event, listener);
+    for (const l of oldListeners) {
+      this.on(event, l);
+    }
+    return ret;
+  }
+
   static property(name) {
     const sName = Symbol(name);
     const eventName = `change:${name}`;
