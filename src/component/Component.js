@@ -54,6 +54,21 @@ class Component extends EventEmitter {
     return ret;
   }
 
+  bindProperty(name, deps, expr) {
+    if (!(name in this)) {
+      Component.addProperty(this, name);
+    }
+
+    const update = () => {
+      this.name = expr;
+    }
+
+    for (const [depObj, depName] of update) {
+      depObj.connect(`change:${depName}`, this, update);
+    }
+    update();
+  }
+
   // TODO: use decorators?
   static addProperty(obj, name) {
     const sName = Symbol(name);
