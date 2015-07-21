@@ -42,10 +42,10 @@
       }
     }
 
-    @init {
+    @on "init" {
       console.log("counter init");
     }
-    @deinit {
+    @prepend "deinit" {
       console.log("counter deinit");
     }
   }
@@ -56,30 +56,31 @@
 
 ```js
 const Counter = () => {
-  let root;
-  let title;
-  let button;
-  let count;
 
   class Counter extends t.section {
-    link() {
-      super.link();
+    constructor() {
+      super();
+
+      let root;
+      let title;
+      let button;
+      let count;
 
       class Class_title extends mixin(t.h1, title, largeFont) {
-        link() {
+        constructor() {
+          super();
           title = this;
-        }
-
-        init() {
-          super.init();
-          console.log("title init");
+          this.on("init", () => {
+            console.log("title init");
+          });
         }
       }
 
       class Class_button extends t.button {
-        link() {
-          button = this;
+        constructor() {
+          super();
 
+          button = this;
           button.on("clicked", function () {
             ++root.clicked;
           }.bind(button));
@@ -87,7 +88,8 @@ const Counter = () => {
       }
 
       class Class_count extends t.p {
-        link() {
+        constructor() {
+          super();
           count = this;
 
           count.bindProperty("content", [root, "clickCount"], function () {
@@ -95,6 +97,7 @@ const Counter = () => {
           }.bind(count));
         }
       }
+      Class_count.property("content");
 
       root = this;
       new Class_title();
@@ -118,14 +121,14 @@ const Counter = () => {
           c.parent = this;
         }
       });
-    }
-    init() {
-      super.init();
-      console.log("counter init");
-    }
-    deinit() {
-      console.log("counter deinit");
-      super.deinit();
+
+      root.on("init", () => {
+        console.log("counter init");
+      })
+
+      prependEventListener(root, "deinit", () => {
+        console.log("counter deinit");
+      });
     }
   }
   Counter.property("clickCount");
