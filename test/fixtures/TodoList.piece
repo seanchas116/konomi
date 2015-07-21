@@ -38,11 +38,11 @@
       console.log "clicked";
     }
 
-    @init {
+    @on "init" {
       console.log "init";
     }
 
-    @deinit {
+    @prepend "deinit" {
       console.log "deinit";
     }
 

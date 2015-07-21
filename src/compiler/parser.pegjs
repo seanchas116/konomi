@@ -167,26 +167,18 @@ OnDirective
     };
   }
 
-InitDirective
-  = "init" _ block:JSBraces _
+PrependDirective
+  = "prepend" __ event:JSString _ block:JSBraces _
   {
     return {
-      type: "init",
-      block
-    };
-  }
-
-DeinitDirective
-  = "deinit" _ block:JSBraces _
-  {
-    return {
-      type: "deinit",
+      type: "prepend",
+      event,
       block
     };
   }
 
 Directive
-  = "@" dir:(IdDirective / IfDirective / RepeatDirective / OnDirective / InitDirective / DeinitDirective)
+  = "@" dir:(IdDirective / IfDirective / RepeatDirective / OnDirective / PrependDirective)
   {
     return dir;
   }
