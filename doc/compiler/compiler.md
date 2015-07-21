@@ -68,48 +68,33 @@ const Counter = () => {
       let button;
       let count;
 
-      // define children classes
-
-      class Class_title extends mixin(t.h1, title, largeFont) {
-        constructor() {
-          super();
-          title = this;
-
-          this.on("init", () => {
-            console.log("title init");
-          });
-        }
-      }
-
-      class Class_button extends t.button {
-        constructor() {
-          super();
-          button = this;
-
-          this.on("clicked", () => {
-            ++root.clicked;
-          });
-        }
-      }
-
-      class Class_count extends t.p {
-        constructor() {
-          super();
-          count = this;
-
-          this.bindProperty("content", [root, "clickCount"], () => {
-            return `${root.clickCount} times clicked`;
-          });
-        }
-      }
-      Class_count.property("content");
-
-      // create children //
-
       root = this;
-      new Class_title();
-      new Class_button();
-      new Class_count();
+
+      // create objects
+
+      title = new (mixin(t.h1, title, largeFont))();
+      (function () {
+        Component.addProperty(this, "text");
+        this.on("init", () => {
+          console.log("title init");
+        });
+      }).call(title);
+
+      button = new t.button();
+      (function () {
+        Component.addProperty(this, "text");
+        this.on("clicked", () => {
+          ++root.clicked;
+        });
+      }).call(button);
+
+      count = new t.p();
+      (function () {
+        Component.addProperty(this, "text");
+        this.bindProperty("content", [root, "clickCount"], () => {
+          return `${root.clickCount} times clicked`;
+        });
+      }).call(count);
 
       // bind properties //
 
@@ -136,7 +121,7 @@ const Counter = () => {
       });
     }
   }
-  Counter.property("clickCount");
+  Counter.addProperty(Counter.prototype, "clickCount");
 
   return Counter;
 }
