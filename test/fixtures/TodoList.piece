@@ -39,15 +39,15 @@
     }
 
     @on "click" {
-      console.log "clicked";
+      console.log("clicked");
     }
 
     @on "init" {
-      console.log "init";
+      console.log("init");
     }
 
     @prepend "deinit" {
-      console.log "deinit";
+      console.log("deinit");
     }
 
     addTodos(todo) {
