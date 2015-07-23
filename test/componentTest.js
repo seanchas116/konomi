@@ -5,6 +5,7 @@ import {assert} from "chai";
 describe("TodoList component", () => {
   it("loads", () => {
     const TodoList = require("./fixtures/TodoList");
-    assert(TodoList instanceof Component);
+    const todoList = new TodoList();
+    assert(todoList instanceof Component);
   });
 });
