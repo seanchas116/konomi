@@ -74,11 +74,11 @@ class Component extends EventEmitter {
   }
 
   // TODO: use decorators?
-  static addProperty(obj, name) {
+  static addProperty(name) {
     const sName = Symbol(name);
     const eventName = `change:${name}`;
 
-    obj.defineProperty(name, {
+    this.prototype.defineProperty(name, {
       enumerable: true,
       get() {
         return this[sName];
@@ -94,4 +94,4 @@ class Component extends EventEmitter {
   }
 }
 
-Component.addProperty(Component.prototype, "parent");
+Component.addProperty("parent");
