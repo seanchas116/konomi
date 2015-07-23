@@ -16,8 +16,8 @@ function propertyDepsResolver(expr) {
         }
         return obj[name];
       };
-      const __result = ${exprWithCheck}();
-      return [__result, __deps];
+      ${exprWithCheck}();
+      return __deps;
     }
   `;
 }
