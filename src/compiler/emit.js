@@ -12,9 +12,9 @@ function emitProperty(tree) {
 
   // TODO: resolve dependencies
   return `
-    this.bindProperty("${tree.name}", [], function () {
+    this.bindProperty("${tree.name}", [], () => {
       ${block}
-    }.bind(this));
+    });
   `;
 }
 
@@ -25,9 +25,9 @@ function emitEventListener(tree) {
   };
 
   return `
-    this.${funcNames[tree.type]}(${tree.event.content}, function () {
+    this.${funcNames[tree.type]}(${tree.event.content}, () => {
       ${tree.block.content}
-    }.bind(this));
+    });
   `;
 }
 
