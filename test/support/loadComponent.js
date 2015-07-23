@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import babel from "babel";
+import * as babel from "babel";
 import nodeEval from "eval";
 import {parse, SyntaxError} from "../../src/compiler/parser";
 import emit from "../../src/compiler/emit";
