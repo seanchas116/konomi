@@ -63,7 +63,7 @@ class Component extends EventEmitter {
       this.name = expr;
     }
 
-    for (const [depObj, depName] of update) {
+    for (const [depObj, depName] of deps) {
       depObj.connect(`change:${depName}`, this, update);
     }
     update();
