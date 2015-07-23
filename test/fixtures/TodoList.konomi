@@ -20,7 +20,7 @@
       return "Todo List";
     }
 
-    Title {
+    Component {
       text: root.title;
     }
 
