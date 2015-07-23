@@ -21,7 +21,7 @@ function emitProperty(tree) {
 function emitEventListener(tree) {
   const funcNames = {
     "on": "on",
-    "append": "appendListener",
+    "prepend": "prependListener",
   };
 
   return `
