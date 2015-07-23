@@ -43,16 +43,23 @@ function getId(members, ids) {
   return id;
 }
 
-function emitComponent(tree, ids) {
+function emitComponent(tree, ids, className) {
   const id = getId(tree.members, ids);
+  className = className || `Class_${id}`;
+
+  const addProperties =
+    tree.members.filter(t => t.type === "property")
+      .map(t => `${className}.addProperty("${t.name}");\n`)
+      .join("");
 
   return `
-    class Class_${id} extends ${tree.name} {
+    class ${className} extends ${tree.name} {
       constructor() {
         ${emitMembers(tree.members, ids)}
       }
     }
-    ${id} = new Class_${id}();
+    ${addProperties}
+    ${id} = new ${className}();
   `
 }
 
@@ -69,30 +76,15 @@ function emitMembers(members, ids) {
 function emitComponentDefinition(tree) {
   const ids = [];
 
-  const id = getId(tree.component.members, ids);
-
-  const members = emitMembers(tree.component.members, ids);
-  const name = tree.name;
-
   const scope = ids.map(id => `let ${id};\n`).join("");
+  const component = emitComponent(tree.component, ids, tree.name);
 
-  const addProperties =
-    tree.component.members.filter(t => t.type === "property")
-      .map(t => `Component.addProperty(${name}.prototype, "${t.name}");\n`)
-      .join("");
 
   return `
-    const ${name} = () => {
-      class ${name} extends ${tree.component.name} {
-        super();
-
-        ${scope}
-
-        ${id} = this;
-
-        ${members}
-      }
-      ${addProperties}
+    const ${tree.name} = () => {
+      ${scope}
+      ${component}
+      return ${tree.name}
     }();
   `;
 }
