@@ -14,6 +14,7 @@
     "eval": "^0.1.0",
     "gulp": "^3.9.0",
     "gulp-shell": "^0.4.2",
+    "line-numbers": "^0.2.0",
     "mocha": "^2.2.5",
     "pegjs": "git://github.com/pegjs/pegjs.git#317059760a9e2ddbe89af1b24f8c7d916cecf4d3"
   },

@@ -4,6 +4,7 @@ import babel from "babel";
 import nodeEval from "eval";
 import {parse, SyntaxError} from "../../src/compiler/parser";
 import emit from "../../src/compiler/emit";
+import lineNumbers from "line-numbers";
 
 export default
 function loadComponent(name) {
@@ -14,7 +15,7 @@ function loadComponent(name) {
     console.log(JSON.stringify(parsed, null, 2));
 
     const emitted = emit(parsed);
-    console.log(emitted);
+    console.log(lineNumbers(emitted));
 
     return nodeEval(babel.transform(emitted));
 
