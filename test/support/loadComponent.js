@@ -16,7 +16,7 @@ function loadComponent(name) {
     const emitted = emit(parsed);
     console.log(emitted);
 
-    return nodeEval(emitted);
+    return nodeEval(babel.transform(emitted));
 
   } catch (e) {
     if (e instanceof SyntaxError) {
