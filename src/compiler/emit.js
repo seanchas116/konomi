@@ -1,6 +1,6 @@
 import render from "./render";
 
-function propertyDepsResolver(expr, {indent}) {
+function emitPropertyDeps(expr, {indent}) {
   // e.g. foo.bar
   const exprWithCheck = expr.replace(/([a-zA-Z_$][0-9a-zA-Z_$]*)\s*\.\s*([a-zA-Z_$][0-9a-zA-Z_$]*)\s*(?=[^(])/, (match, obj, prop) => {
     return `__checkDep(${obj}, "${prop}")`;
@@ -18,7 +18,7 @@ function propertyDepsResolver(expr, {indent}) {
       };
       ${exprWithCheck}();
       return __deps;
-    }
+    }()
   `;
 }
 
@@ -40,7 +40,7 @@ function emitProperty(tree, {indent}) {
   return render(indent)`
     this.bindProperty(
       "${tree.name}",
-      ${propertyDepsResolver(expr, {indent: indent + 1})}(),
+      ${emitPropertyDeps(expr, {indent: indent + 1})},
       ${expr}
     );
   `;
