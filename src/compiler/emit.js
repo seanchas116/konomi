@@ -43,7 +43,7 @@ function getId(members, ids) {
   return id;
 }
 
-function emitComponent(tree, ids, className) {
+function emitComponent(tree, {ids, className}) {
   const id = getId(tree.members, ids);
   className = className || `Class_${id}`;
 
@@ -55,7 +55,7 @@ function emitComponent(tree, ids, className) {
   return `
     class ${className} extends ${tree.name} {
       constructor() {
-        ${emitMembers(tree.members, ids)}
+        ${emitMembers(tree.members, {ids})}
       }
     }
     ${addProperties}
@@ -63,12 +63,12 @@ function emitComponent(tree, ids, className) {
   `
 }
 
-function emitMembers(members, ids) {
+function emitMembers(members, {ids}) {
   const componentTrees = members.filter(t => t.type === "component");
   const propertyTrees = members.filter(t => t.type === "property");
   const eventListenerTrees = members.filter(t => t.type === "on" || t.type === "prepend");
 
-  return componentTrees.map(t => emitComponent(t, ids)).join("") +
+  return componentTrees.map(t => emitComponent(t, {ids})).join("") +
     propertyTrees.map(emitProperty).join("") +
     eventListenerTrees.map(emitEventListener).join("");
 }
@@ -77,7 +77,7 @@ function emitComponentDefinition(tree) {
   const ids = [];
 
   const scope = ids.map(id => `let ${id};\n`).join("");
-  const component = emitComponent(tree.component, ids, tree.name);
+  const component = emitComponent(tree.component, {ids, className: tree.name});
 
 
   return `
