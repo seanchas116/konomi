@@ -55,6 +55,7 @@ function emitComponent(tree, {ids, className}) {
   return `
     class ${className} extends ${tree.name} {
       constructor() {
+        super();
         ${emitMembers(tree.members, {ids})}
       }
     }
