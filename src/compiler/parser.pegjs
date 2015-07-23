@@ -177,8 +177,17 @@ PrependDirective
     };
   }
 
+ChildrenDirective
+  = "children" _ expr:(JSBraces / JSStatement) _
+  {
+    return {
+      type: "children",
+      expr
+    };
+  }
+
 Directive
-  = "@" dir:(IdDirective / IfDirective / RepeatDirective / OnDirective / PrependDirective)
+  = "@" dir:(IdDirective / IfDirective / RepeatDirective / OnDirective / PrependDirective / ChildrenDirective)
   {
     return dir;
   }

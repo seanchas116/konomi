@@ -38,6 +38,11 @@
       }
     }
 
+    @children [
+      new Component(),
+      new Component()
+    ];
+
     @on "click" {
       console.log("clicked");
     }
