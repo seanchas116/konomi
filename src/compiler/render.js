@@ -1,5 +1,14 @@
 const INDENT_REGEXP = /(?:\n)[ \t]+/g;
 
+function trimLast(strings) {
+  return strings.map((s, i) => {
+    if (i === strings.length - 1) {
+      return s.trim();
+    }
+    return s;
+  });
+}
+
 function changeIndent(str, diff) {
   return str.replace(INDENT_REGEXP, matched => "\n" + " ".repeat(matched.length + diff));
 }
@@ -23,7 +32,7 @@ export default
 function render(indentLevel) {
   const indent = indentLevel * 2;
   return function (strings, ...values) {
-    const indentedStrings = fixIndents(strings, indent);
+    const indentedStrings = fixIndents(trimLast(strings), indent);
 
     let ret = "";
 
