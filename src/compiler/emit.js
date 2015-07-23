@@ -93,9 +93,17 @@ function emitMembers(members, {ids}) {
   const propertyTrees = members.filter(t => t.type === "property");
   const eventListenerTrees = members.filter(t => t.type === "on" || t.type === "prepend");
 
-  return componentTrees.map(t => emitComponent(t, {ids})).join("") +
-    propertyTrees.map(emitProperty).join("") +
-    eventListenerTrees.map(emitEventListener).join("");
+  const components = componentTrees.map(t => emitComponent(t, {ids})).join("");
+  const properties = propertyTrees.map(emitProperty).join("");
+  const eventListeners = eventListenerTrees.map(emitEventListener).join("");
+
+  return `
+    ${components}
+    ${eventListeners}
+    this.on("link", () => {
+      ${properties}
+    });
+  `;
 }
 
 function emitComponentDefinition(tree) {

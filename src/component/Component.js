@@ -32,9 +32,12 @@ class Component extends EventEmitter {
         c.parent = this;
       }
     });
+
+    this.emit("link");
   }
 
   dispose() {
+    this.emit("unlink");
     for (const c of Array.from(this[sConnections])) {
       c.dispose();
     }
