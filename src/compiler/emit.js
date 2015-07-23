@@ -28,7 +28,11 @@ function emitProperty(tree, {indent}) {
       case "jsExpr":
         return `() => { return ${tree.expr.content} }`;
       case "jsBlock":
-        return `() => { ${tree.expr.content} }`;
+        return render(indent + 1)`
+          () => {
+            ${tree.expr.content}
+          }
+        `;
     }
   }();
 
@@ -96,7 +100,7 @@ function emitMembers(members, {ids, indent}) {
   const eventListenerTrees = members.filter(t => t.type === "on" || t.type === "prepend");
 
   const components = componentTrees.map(t => emitComponent(t, {ids, indent})).join("");
-  const properties = propertyTrees.map(t => emitProperty(t, {indent})).join("");
+  const properties = propertyTrees.map(t => emitProperty(t, {indent: indent + 1})).join("");
   const eventListeners = eventListenerTrees.map(t => emitEventListener(t, {indent})).join("");
 
   return render(indent)`
