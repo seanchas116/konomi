@@ -208,6 +208,7 @@ module.exports = (function() {
         peg$c51 = function(name, members) {
             return {
               type: "component",
+              name,
               members
             }
           },

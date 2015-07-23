@@ -203,6 +203,7 @@ Component
   {
     return {
       type: "component",
+      name,
       members
     }
   }
