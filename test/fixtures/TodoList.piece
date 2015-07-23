@@ -20,6 +20,10 @@
       return "Todo List";
     }
 
+    Title {
+      text: root.title;
+    }
+
     @repeat (todo with todo.id of this.todos) {
       Todo {
         title: todo.title;

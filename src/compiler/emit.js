@@ -47,10 +47,12 @@ function emitComponent(tree, ids) {
   const id = getId(tree.members, ids);
 
   return `
-    ${id} = new ${tree.name}();
-    (function () {
-      ${emitMembers(tree.members, ids)}
-    }).call(${id});
+    class Class_${id} extends ${tree.name} {
+      constructor() {
+        ${emitMembers(tree.members, ids)}
+      }
+    }
+    ${id} = new Class_${id}();
   `
 }
 
