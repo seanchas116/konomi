@@ -77,9 +77,8 @@ function emitMembers(members, {ids}) {
 function emitComponentDefinition(tree) {
   const ids = [];
 
-  const scope = ids.map(id => `let ${id};\n`).join("");
   const component = emitComponent(tree.component, {ids, className: tree.name});
-
+  const scope = ids.map(id => `let ${id};\n`).join("");
 
   return `
     const ${tree.name} = () => {
