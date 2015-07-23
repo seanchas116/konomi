@@ -1,20 +1,44 @@
 // TODO: source map support
 
+function propertyDepsResolver(expr) {
+  // e.g. foo.bar
+  const exprWithCheck = expr.replace(/([a-zA-Z_$][0-9a-zA-Z_$]*)\s*\.\s*([a-zA-Z_$][0-9a-zA-Z_$]*)\s*(?=[^(])/, (match, obj, prop) => {
+    return `__checkDep(${obj}, "${prop}")`;
+  });
+
+  return `
+    () => {
+      const __deps = [];
+      const __checkDep = (obj, name) => {
+        console.log("Checking deps for", name);
+        if (obj != null && obj.isKonomiComponent) {
+          __deps.push([obj, name]);
+        }
+        return obj[name];
+      };
+      const __result = ${exprWithCheck}();
+      return [__result, __deps];
+    }
+  `;
+}
+
 function emitProperty(tree) {
-  const block = () => {
+  const expr = () => {
     switch (tree.expr.type) {
       case "jsExpr":
-        return `return ${tree.expr.content}`;
+        return `() => { return ${tree.expr.content} }`;
       case "jsBlock":
-        return tree.expr.content;
+        return `() => { ${tree.expr.content} }`;
     }
   }();
 
   // TODO: resolve dependencies
   return `
-    this.bindProperty("${tree.name}", [], () => {
-      ${block}
-    });
+    this.bindProperty(
+      "${tree.name}",
+      ${propertyDepsResolver(expr)}(),
+      ${expr}
+    );
   `;
 }
 
