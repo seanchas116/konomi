@@ -1,12 +1,12 @@
-// TODO: source map support
+import render from "./render";
 
-function propertyDepsResolver(expr) {
+function propertyDepsResolver(expr, {indent}) {
   // e.g. foo.bar
   const exprWithCheck = expr.replace(/([a-zA-Z_$][0-9a-zA-Z_$]*)\s*\.\s*([a-zA-Z_$][0-9a-zA-Z_$]*)\s*(?=[^(])/, (match, obj, prop) => {
     return `__checkDep(${obj}, "${prop}")`;
   });
 
-  return `
+  return render(indent)`
     () => {
       const __deps = [];
       const __checkDep = (obj, name) => {
@@ -22,7 +22,7 @@ function propertyDepsResolver(expr) {
   `;
 }
 
-function emitProperty(tree) {
+function emitProperty(tree, {indent}) {
   const expr = () => {
     switch (tree.expr.type) {
       case "jsExpr":
@@ -33,22 +33,22 @@ function emitProperty(tree) {
   }();
 
   // TODO: resolve dependencies
-  return `
+  return render(indent)`
     this.bindProperty(
       "${tree.name}",
-      ${propertyDepsResolver(expr)}(),
+      ${propertyDepsResolver(expr, {indent: indent + 1})}(),
       ${expr}
     );
   `;
 }
 
-function emitEventListener(tree) {
+function emitEventListener(tree, {indent}) {
   const funcNames = {
     "on": "on",
     "prepend": "prependListener",
   };
 
-  return `
+  return render(indent)`
     this.${funcNames[tree.type]}(${tree.event.content}, () => {
       ${tree.block.content}
     });
@@ -67,20 +67,22 @@ function getId(members, ids) {
   return id;
 }
 
-function emitComponent(tree, {ids, className}) {
+function emitComponent(tree, {ids, className, indent}) {
   const id = getId(tree.members, ids);
   className = className || `Class_${id}`;
 
   const addProperties =
     tree.members.filter(t => t.type === "property")
-      .map(t => `${className}.addProperty("${t.name}");\n`)
+      .map(t => render(indent)`
+        ${className}.addProperty("${t.name}");
+      `)
       .join("");
 
-  return `
+  return render(indent)`
     class ${className} extends ${tree.name} {
       constructor() {
         super();
-        ${emitMembers(tree.members, {ids})}
+        ${emitMembers(tree.members, {ids, indent: indent + 2})}
       }
     }
     ${addProperties}
@@ -88,16 +90,16 @@ function emitComponent(tree, {ids, className}) {
   `
 }
 
-function emitMembers(members, {ids}) {
+function emitMembers(members, {ids, indent}) {
   const componentTrees = members.filter(t => t.type === "component");
   const propertyTrees = members.filter(t => t.type === "property");
   const eventListenerTrees = members.filter(t => t.type === "on" || t.type === "prepend");
 
-  const components = componentTrees.map(t => emitComponent(t, {ids})).join("");
-  const properties = propertyTrees.map(emitProperty).join("");
-  const eventListeners = eventListenerTrees.map(emitEventListener).join("");
+  const components = componentTrees.map(t => emitComponent(t, {ids, indent})).join("");
+  const properties = propertyTrees.map(t => emitProperty(t, {indent})).join("");
+  const eventListeners = eventListenerTrees.map(t => emitEventListener(t, {indent})).join("");
 
-  return `
+  return render(indent)`
     ${components}
     ${eventListeners}
     this.on("link", () => {
@@ -106,17 +108,19 @@ function emitMembers(members, {ids}) {
   `;
 }
 
-function emitComponentDefinition(tree) {
+function emitComponentDefinition(tree, {indent}) {
   const ids = [];
 
-  const component = emitComponent(tree.component, {ids, className: tree.name});
-  const scope = ids.map(id => `let ${id};\n`).join("");
+  const component = emitComponent(tree.component, {ids, className: tree.name, indent: indent + 1});
+  const scope = ids.map(id => render(indent)`
+    let ${id};\n
+  `).join("");
 
-  return `
+  return render(indent)`
     const ${tree.name} = () => {
       ${scope}
       ${component}
-      return ${tree.name}
+      return ${tree.name};
     }();
   `;
 }
@@ -127,7 +131,7 @@ function emitRoot(tree) {
       return tree.content;
     }
     case "componentDefinition": {
-      return emitComponentDefinition(tree);
+      return emitComponentDefinition(tree, {indent: 0});
     }
   }
 }
