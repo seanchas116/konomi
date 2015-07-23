@@ -69,6 +69,10 @@ class Component extends EventEmitter {
     update();
   }
 
+  get children() {
+    return [];
+  }
+
   // TODO: use decorators?
   static addProperty(obj, name) {
     const sName = Symbol(name);
@@ -90,5 +94,4 @@ class Component extends EventEmitter {
   }
 }
 
-Component.addProperty(Component.prototype, "children");
 Component.addProperty(Component.prototype, "parent");

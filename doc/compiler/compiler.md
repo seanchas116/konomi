@@ -57,11 +57,11 @@
 ```js
 const Counter = () => {
 
+  const sChildren = Symbol("children");
+
   class Counter extends t.section {
     constructor() {
       super();
-
-      // define scope
 
       let root;
       let title;
@@ -117,8 +117,13 @@ const Counter = () => {
       });
 
       Component.observeProperty([], () => {
-        root.children = [title, button, count];
+        root[sChildren] = [title, button, count];
+        this.emit("change:children", this.children);
       });
+    }
+
+    get children() {
+      return super.children.concat(this[sChildren]);
     }
   }
   Component.addProperty(Counter.prototype, "clickCount");
