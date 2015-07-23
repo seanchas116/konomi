@@ -1,5 +1,5 @@
 {
-  "name": "mosaicpiece",
+  "name": "konomi",
   "version": "0.1.0",
   "description": "Declarative object tree construction system, mainly for UI programming",
   "main": "index.js",

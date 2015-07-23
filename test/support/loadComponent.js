@@ -8,7 +8,7 @@ import lineNumbers from "line-numbers";
 
 export default
 function loadComponent(name) {
-  const file = fs.readFileSync(path.join(__dirname, `../fixtures/${name}.piece`), {encoding: "utf8"});
+  const file = fs.readFileSync(path.join(__dirname, `../fixtures/${name}.konomi`), {encoding: "utf8"});
 
   try {
     const parsed = parse(file);

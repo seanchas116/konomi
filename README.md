@@ -1,4 +1,4 @@
-[WIP] mosaicpiece
+[WIP] konomi
 ========
 
 Declarative object tree construction system for JavaScript, mainly for UI programming
@@ -6,6 +6,7 @@ Declarative object tree construction system for JavaScript, mainly for UI progra
 Influenced by QML, with flavor of Jade and Sass
 
 ```js
+// FIXME: outdated
 import Element from "ui-element";
 import {title, largeFont} from "./styles";
 
