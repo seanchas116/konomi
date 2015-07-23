@@ -78,7 +78,7 @@ class Component extends EventEmitter {
     const sName = Symbol(name);
     const eventName = `change:${name}`;
 
-    this.prototype.defineProperty(name, {
+    Object.defineProperty(this.prototype, name, {
       enumerable: true,
       get() {
         return this[sName];
