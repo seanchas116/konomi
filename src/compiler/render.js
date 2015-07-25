@@ -28,8 +28,6 @@ function fixIndents(strings, indent) {
   return strings.map(s => changeIndent(s, indent - origIndent));
 }
 
-// TODO: source map support
-
 export default
 function render(indentLevel) {
   const indent = indentLevel * 2;
