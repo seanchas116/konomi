@@ -1,5 +1,6 @@
 import {parse} from "./parser";
 import emit from "./emit";
+import build from "./build";
 import lineNumbers from "line-numbers";
 
 export default
@@ -7,6 +8,9 @@ function compile(content) {
   try {
     const parsed = parse(content);
     console.log(JSON.stringify(parsed, null, 2));
+
+    const tree = build(parsed);
+    console.log(JSON.stringify(tree, null, 2));
 
     const emitted = emit(parsed);
     console.log(lineNumbers(emitted));
