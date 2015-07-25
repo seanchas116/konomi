@@ -1,3 +1,11 @@
+{
+  const {SourceNode} = require("source-map");
+  const {line, column} = location().start;
+
+  function sourceNode() {
+    return new SourceNode(line, column, text());
+  }
+}
 
 Start
   = Root
@@ -14,7 +22,7 @@ __
 Identifier
   = chars:[a-zA-Z_]+
   {
-    return text();
+    return sourceNode();
   }
 
 // TODO: improve
@@ -23,14 +31,14 @@ JSString
   {
     return {
       type: "jsExpr",
-      content: text()
+      content: sourceNode()
     }
   }
 
 JSParensContent
   = (!")" JSText)*
   {
-    return text();
+    return sourceNode();
   }
 
 JSParens
@@ -45,7 +53,7 @@ JSParens
 JSBracesContent
   = (!"}" JSText)*
   {
-    return text();
+    return sourceNode();
   }
 
 JSBraces
@@ -63,7 +71,7 @@ JSText
 JSStatementContent
   = (!";" JSText)*
   {
-    return text();
+    return sourceNode();
   }
 
 JSStatement
@@ -118,7 +126,7 @@ IfDirective
 RepeatWithContent
   = (!("of" __) JSText)*
   {
-    return text();
+    return sourceNode();
   }
 
 RepeatWith
@@ -133,7 +141,7 @@ RepeatWith
 RepeatOfContent
   = (!")" JSText)*
   {
-    return text();
+    return sourceNode();
   }
 
 RepeatOf
@@ -204,7 +212,7 @@ Members
 ComponentName
   = Identifier _ ("." _ Identifier _)*
   {
-    return text();
+    return sourceNode();
   }
 
 Component
