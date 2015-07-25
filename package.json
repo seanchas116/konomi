@@ -4,7 +4,7 @@
   "description": "Declarative object tree construction system, mainly for UI programming",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --require ./babelHook ./test/**/*Test.js"
+    "test": "mocha --require ./requireHook ./test/**/*Test.js"
   },
   "author": "",
   "license": "MIT",
