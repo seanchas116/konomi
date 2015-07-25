@@ -1,10 +1,18 @@
+import {SourceNode} from "source-map";
 import render from "./render";
 
 function emitPropertyDeps(expr, {indent}) {
   // e.g. foo.bar
-  const exprWithCheck = expr.replace(/([a-zA-Z_$][0-9a-zA-Z_$]*)\s*\.\s*([a-zA-Z_$][0-9a-zA-Z_$]*)\s*(?=[^(])/, (match, obj, prop) => {
+  const exprText = expr.toString();
+  const exprWithCheckText = exprText.replace(/([a-zA-Z_$][0-9a-zA-Z_$]*)\s*\.\s*([a-zA-Z_$][0-9a-zA-Z_$]*)\s*(?=[^(])/, (match, obj, prop) => {
     return `__checkDep(${obj}, "${prop}")`;
   });
+  const exprWithCheck = new SourceNode(
+    expr.line,
+    expr.column,
+    expr.source,
+    exprWithCheckText, expr.name
+  );
 
   return render(indent)`
     () => {
@@ -25,7 +33,7 @@ function emitPropertyDeps(expr, {indent}) {
 function emitProperty(property, {indent}) {
   const {name, block} = property;
 
-  const func = `() => { ${block} }`;
+  const func = render(0)`() => { ${block} }`;
 
   // TODO: resolve dependencies
   return render(indent)`
