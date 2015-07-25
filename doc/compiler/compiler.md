@@ -41,6 +41,23 @@
         text: `${i}`;
       }
     }
+    /*
+    syntax sugar for
+    Repeater {
+      @id repeater;
+      source: _.times(root.clickCount);
+
+      @component RepeatedItem(data) {
+        // data is a component
+        t.p {
+          text: `${data.value}`;
+        }
+      }
+      template: RepeatedItem;
+    }
+    @children repeater.components;
+    */
+
     @if (0 < root.clickCount) {
       t.p {
         id: clickedLabel;
