@@ -22,71 +22,49 @@ function emitPropertyDeps(expr, {indent}) {
   `;
 }
 
-function emitProperty(tree, {indent}) {
-  const expr = () => {
-    switch (tree.expr.type) {
-      case "jsExpr":
-        return `() => { return ${tree.expr.content} }`;
-      case "jsBlock":
-        return render(indent + 1)`
-          () => {
-            ${tree.expr.content}
-          }
-        `;
-    }
-  }();
+function emitProperty(property, {indent}) {
+  const {name, block} = property;
+
+  const func = `() => { ${block} }`;
 
   // TODO: resolve dependencies
   return render(indent)`
     this.bindProperty(
-      "${tree.name}",
-      ${emitPropertyDeps(expr, {indent: indent + 1})},
-      ${expr}
+      "${name}",
+      ${emitPropertyDeps(func, {indent: indent + 1})},
+      ${func}
     );
   `;
 }
 
-function emitEventListener(tree, {indent}) {
+function emitEventListener(listener, {indent}) {
+  const {type, event, block} = listener;
   const funcNames = {
     "on": "on",
     "prepend": "prependListener",
   };
 
   return render(indent)`
-    this.${funcNames[tree.type]}(${tree.event.content}, () => {
-      ${tree.block.content}
+    this.${funcNames[type]}(${event}, () => {
+      ${block}
     });
   `;
 }
 
-function getId(members, ids) {
-  const idTree = members.find(t => t.type === "id");
-  if (idTree) {
-    if (ids.indexOf(idTree.name) >= 0) {
-      throw new Error(`ID "${idTree.name}" already used`);
-    }
-  }
-  const id = idTree ? idTree.name : `__component_${ids.length}`;
-  ids.push(id);
-  return id;
-}
+function emitComponent(component, {indent}) {
+  const {id, className, superName, members} = component;
 
-function emitComponent(tree, {ids, className, indent}) {
-  const id = getId(tree.members, ids);
-  className = className || `Class_${id}`;
-
-  const addProperties =
-    tree.members.filter(t => t.type === "property")
-      .map(t => render(indent)`
-        ${className}.addProperty("${t.name}");
-      `)
-      .join("");
+  const addProperties = members.properties
+    .map(t => render(indent)`
+      ${className}.addProperty("${t.name}");
+    `)
+    .join("");
 
   return render(indent)`
-    class ${className} extends ${tree.name} {
+    class ${className} extends ${superName} {
       constructor() {
         super();
-        ${emitMembers(tree.members, {ids, indent: indent + 2})}
+        ${emitMembers(members, {indent: indent + 2})}
       }
     }
     ${addProperties}
@@ -94,53 +72,52 @@ function emitComponent(tree, {ids, className, indent}) {
   `
 }
 
-function emitMembers(members, {ids, indent}) {
-  const componentTrees = members.filter(t => t.type === "component");
-  const propertyTrees = members.filter(t => t.type === "property");
-  const eventListenerTrees = members.filter(t => t.type === "on" || t.type === "prepend");
+function emitMembers(members, {indent}) {
+  const {components, properties, eventListeners} = members;
 
-  const components = componentTrees.map(t => emitComponent(t, {ids, indent})).join("");
-  const properties = propertyTrees.map(t => emitProperty(t, {indent: indent + 1})).join("");
-  const eventListeners = eventListenerTrees.map(t => emitEventListener(t, {indent})).join("");
+  const componentsOutput = components.map(t => emitComponent(t, {indent})).join("");
+  const propertiesOutput = properties.map(t => emitProperty(t, {indent: indent + 1})).join("");
+  const eventListenersOutput = eventListeners.map(t => emitEventListener(t, {indent})).join("");
 
   return render(indent)`
-    ${components}
-    ${eventListeners}
+    ${componentsOutput}
+    ${eventListenersOutput}
     this.on("link", () => {
-      ${properties}
+      ${propertiesOutput}
     });
   `;
 }
 
-function emitComponentDefinition(tree, {indent}) {
-  const ids = [];
+function emitComponentDefinition(componentDefinition, {indent}) {
+  const {scope, component} = componentDefinition;
+  const {className} = component;
 
-  const component = emitComponent(tree.component, {ids, className: tree.name, indent: indent + 1});
-  const scope = ids.map(id => render(indent)`
+  const componentOutput = emitComponent(component, {indent: indent + 1});
+  const scopeOutput = scope.map(id => render(indent)`
     let ${id};\n
   `).join("");
 
   return render(indent)`
-    const ${tree.name} = () => {
-      ${scope}
-      ${component}
-      return ${tree.name};
+    const ${className} = () => {
+      ${scopeOutput}
+      ${componentOutput}
+      return ${className};
     }();
   `;
 }
 
-function emitRoot(tree) {
-  switch (tree.type) {
-    case "jsBlock": {
-      return tree.content;
+function emitRoot(item) {
+  switch (item.type) {
+    case "js": {
+      return item.content;
     }
     case "componentDefinition": {
-      return emitComponentDefinition(tree, {indent: 0});
+      return emitComponentDefinition(item, {indent: 0});
     }
   }
 }
 
 export default
-function emit(trees) {
-  return trees.map(emitRoot).join("\n");
+function emit(items) {
+  return items.map(emitRoot).join("\n");
 }

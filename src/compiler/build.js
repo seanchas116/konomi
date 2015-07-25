@@ -35,10 +35,11 @@ function getId(members, scope) {
 function buildComponent(tree, {scope, className}) {
   const id = getId(tree.members, scope);
   className = className || `Class_${id}`;
+  const superName = tree.name;
 
   const members = buildMembers(tree.members, {scope})
 
-  return {id, className, members};
+  return {id, className, superName, members};
 }
 
 function buildMembers(members, {scope}) {
@@ -55,10 +56,12 @@ function buildMembers(members, {scope}) {
 
 function buildComponentDefinition(tree) {
   const scope = [];
-  const component = buildComponent(tree.component, {scope, className: tree.name});
+  const className = tree.name;
+  const component = buildComponent(tree.component, {scope, className});
 
   return {
     type: "componentDefinition",
+    scope,
     component
   };
 }
