@@ -1,3 +1,5 @@
+import {concatSourceNodes} from "./util";
+
 const INDENT_REGEXP = /(?:\n)[ \t]+/g;
 
 function trimLast(strings) {
@@ -26,22 +28,20 @@ function fixIndents(strings, indent) {
   return strings.map(s => changeIndent(s, indent - origIndent));
 }
 
-// TODO: source map support
-
 export default
 function render(indentLevel) {
   const indent = indentLevel * 2;
   return function (strings, ...values) {
     const indentedStrings = fixIndents(trimLast(strings), indent);
 
-    let ret = "";
+    const children = [];
 
     for (let i = 0; i < strings.length; ++i) {
-      ret += indentedStrings[i];
+      children.push(indentedStrings[i]);
       if (i < values.length) {
-        ret += String(values[i]);
+        children.push(values[i]);
       }
     }
-    return ret;
+    return concatSourceNodes(children);
   }
 }

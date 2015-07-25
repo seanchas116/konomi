@@ -1,10 +1,19 @@
+import {SourceNode} from "source-map";
 import render from "./render";
+import {concatSourceNodes} from "./util";
 
 function emitPropertyDeps(expr, {indent}) {
   // e.g. foo.bar
-  const exprWithCheck = expr.replace(/([a-zA-Z_$][0-9a-zA-Z_$]*)\s*\.\s*([a-zA-Z_$][0-9a-zA-Z_$]*)\s*(?=[^(])/, (match, obj, prop) => {
+  const exprText = expr.toString();
+  const exprWithCheckText = exprText.replace(/([a-zA-Z_$][0-9a-zA-Z_$]*)\s*\.\s*([a-zA-Z_$][0-9a-zA-Z_$]*)\s*(?=[^(])/, (match, obj, prop) => {
     return `__checkDep(${obj}, "${prop}")`;
   });
+  const exprWithCheck = new SourceNode(
+    expr.line,
+    expr.column,
+    expr.source,
+    exprWithCheckText, expr.name
+  );
 
   return render(indent)`
     () => {
@@ -25,7 +34,7 @@ function emitPropertyDeps(expr, {indent}) {
 function emitProperty(property, {indent}) {
   const {name, block} = property;
 
-  const func = `() => { ${block} }`;
+  const func = render(0)`() => { ${block} }`;
 
   // TODO: resolve dependencies
   return render(indent)`
@@ -54,11 +63,11 @@ function emitEventListener(listener, {indent}) {
 function emitComponent(component, {indent}) {
   const {id, className, superName, members} = component;
 
-  const addProperties = members.properties
-    .map(t => render(indent)`
+  const addProperties = concatSourceNodes(
+    members.properties.map(t => render(indent)`
       ${className}.addProperty("${t.name}");
     `)
-    .join("");
+  );
 
   return render(indent)`
     class ${className} extends ${superName} {
@@ -75,9 +84,9 @@ function emitComponent(component, {indent}) {
 function emitMembers(members, {indent}) {
   const {components, properties, eventListeners} = members;
 
-  const componentsOutput = components.map(t => emitComponent(t, {indent})).join("");
-  const propertiesOutput = properties.map(t => emitProperty(t, {indent: indent + 1})).join("");
-  const eventListenersOutput = eventListeners.map(t => emitEventListener(t, {indent})).join("");
+  const componentsOutput = concatSourceNodes(components.map(t => emitComponent(t, {indent})));
+  const propertiesOutput = concatSourceNodes(properties.map(t => emitProperty(t, {indent: indent + 1})));
+  const eventListenersOutput = concatSourceNodes(eventListeners.map(t => emitEventListener(t, {indent})));
 
   return render(indent)`
     ${componentsOutput}
@@ -93,9 +102,11 @@ function emitComponentDefinition(componentDefinition, {indent}) {
   const {className} = component;
 
   const componentOutput = emitComponent(component, {indent: indent + 1});
-  const scopeOutput = scope.map(id => render(indent)`
-    let ${id};\n
-  `).join("");
+  const scopeOutput = concatSourceNodes(
+    scope.map(id => render(indent)`
+      let ${id};\n
+    `)
+  );
 
   return render(indent)`
     const ${className} = () => {
@@ -119,5 +130,5 @@ function emitRoot(item) {
 
 export default
 function emit(items) {
-  return items.map(emitRoot).join("\n");
+  return concatSourceNodes(items.map(emitRoot));
 }

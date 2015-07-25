@@ -4,15 +4,15 @@ import build from "./build";
 import lineNumbers from "line-numbers";
 
 export default
-function compile(content) {
+function compile(content, {filename}) {
   try {
-    const parsed = parse(content);
+    const parsed = parse(content, {filename});
     console.log(JSON.stringify(parsed, null, 2));
 
     const tree = build(parsed);
     console.log(JSON.stringify(tree, null, 2));
 
-    const emitted = emit(tree);
+    const emitted = emit(tree).toString();
     console.log(lineNumbers(emitted));
 
     return emitted;
