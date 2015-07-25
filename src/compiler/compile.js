@@ -12,7 +12,7 @@ function compile(content, {filename}) {
     const tree = build(parsed);
     console.log(JSON.stringify(tree, null, 2));
 
-    const emitted = emit(tree);
+    const emitted = emit(tree).toString();
     console.log(lineNumbers(emitted));
 
     return emitted;
