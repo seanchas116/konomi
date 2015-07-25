@@ -1,4 +1,4 @@
-import {SourceNode} from "source-map";
+import {concatSourceNodes} from "./util";
 
 const INDENT_REGEXP = /(?:\n)[ \t]+/g;
 
@@ -42,6 +42,6 @@ function render(indentLevel) {
         children.push(values[i]);
       }
     }
-    return new SourceNode(null, null, null, children);
+    return concatSourceNodes(children);
   }
 }
