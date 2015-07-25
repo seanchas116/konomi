@@ -3,7 +3,7 @@
   const {line, column} = location().start;
 
   function sourceNode() {
-    return new SourceNode(line, column, text());
+    return new SourceNode(line, column, options.filename, text());
   }
 }
 

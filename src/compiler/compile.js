@@ -4,9 +4,9 @@ import build from "./build";
 import lineNumbers from "line-numbers";
 
 export default
-function compile(content) {
+function compile(content, {filename}) {
   try {
-    const parsed = parse(content);
+    const parsed = parse(content, {filename});
     console.log(JSON.stringify(parsed, null, 2));
 
     const tree = build(parsed);

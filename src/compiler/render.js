@@ -1,3 +1,5 @@
+import {SourceNode} from "source-map";
+
 const INDENT_REGEXP = /(?:\n)[ \t]+/g;
 
 function trimLast(strings) {
@@ -34,14 +36,14 @@ function render(indentLevel) {
   return function (strings, ...values) {
     const indentedStrings = fixIndents(trimLast(strings), indent);
 
-    let ret = "";
+    const children = [];
 
     for (let i = 0; i < strings.length; ++i) {
-      ret += indentedStrings[i];
+      children.push(indentedStrings[i]);
       if (i < values.length) {
-        ret += String(values[i]);
+        children.push(values[i]);
       }
     }
-    return ret;
+    return new SourceNode(null, null, null, children);
   }
 }
