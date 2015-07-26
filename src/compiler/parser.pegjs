@@ -1,8 +1,8 @@
 {
   const {SourceNode} = require("source-map");
-  const {line, column} = location().start;
 
   function sourceNode() {
+    const {line, column} = location().start;
     return new SourceNode(line, column, options.filename, text());
   }
 }
