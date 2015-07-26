@@ -2,7 +2,7 @@
   import Component from "../../src/component/Component";
 }
 
-<Todo> {
+@component Todo {
   Component {
     @id todo;
     title: "";
@@ -11,7 +11,7 @@
   }
 }
 
-<TodoList> {
+@component TodoList {
   Component {
     @id root;
 

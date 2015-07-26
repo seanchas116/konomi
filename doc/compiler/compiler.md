@@ -3,7 +3,7 @@
 ## Input
 
 ```js
-<Counter> {
+@component Counter {
   t.section {
     @id root;
     clickCount: 0;
@@ -47,10 +47,9 @@
       @id repeater;
       source: _.times(root.clickCount);
 
-      @component RepeatedItem(data) {
-        // data is a component
+      @component RepeatedItem {
         t.p {
-          text: `${data.value}`;
+          text: `${this[attachedProperty(Repeater, "value")]}`;
         }
       }
       template: RepeatedItem;
