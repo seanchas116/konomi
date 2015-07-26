@@ -1,0 +1,22 @@
+{
+  import {Component} from "konomi";
+}
+
+@component RootComponent {
+  Component {
+    @id root;
+    value: 123;
+    @component SubComponent() {
+      Component {
+        value: root.value;
+      }
+    }
+    createSubComponent() {
+      return new SubComponent();
+    }
+  }
+}
+
+{
+  export default RootComponent;
+}
