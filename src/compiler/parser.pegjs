@@ -104,6 +104,16 @@ Property
     };
   }
 
+ComponentDirective
+  = "component" _ name:Identifier _ "{" _ component:Component _ "}" _
+  {
+    return {
+      type: "componentDefinition",
+      name,
+      component
+    };
+  }
+
 IdDirective
   = "id" _ name:Identifier _ ";" _
   {
@@ -195,7 +205,7 @@ ChildrenDirective
   }
 
 Directive
-  = "@" dir:(IdDirective / IfDirective / RepeatDirective / OnDirective / PrependDirective / ChildrenDirective)
+  = "@" dir:(IdDirective / IfDirective / RepeatDirective / OnDirective / PrependDirective / ChildrenDirective / ComponentDirective)
   {
     return dir;
   }
@@ -225,14 +235,10 @@ Component
     }
   }
 
-ComponentDefinition
-  = "<" _ name:Identifier _ ">" _ "{" _ component:Component _ "}" _
+TopLevelComponent
+  = "@" dir:ComponentDirective
   {
-    return {
-      type: "componentDefinition",
-      name,
-      component
-    };
+    return dir;
   }
 
 TopLevelJS
@@ -241,4 +247,4 @@ TopLevelJS
     return js;
   }
 
-Root = (TopLevelJS / ComponentDefinition)*
+Root = (TopLevelJS / TopLevelComponent)*
