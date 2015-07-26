@@ -1,5 +1,5 @@
 {
-  import Component from "../../src/component/Component";
+  import {Component} from "konomi";
 }
 
 @component Todo {

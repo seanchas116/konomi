@@ -1,0 +1,37 @@
+{
+  "name": "konomi-compiler",
+  "version": "0.1.0",
+  "description": "Declarative object tree construction system, mainly for UI programming",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "npm link ../konomi",
+    "test": "mocha --require ./requireHook ./test/**/*Test.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "babel": "^5.6.14",
+    "chai": "^3.0.0",
+    "eval": "^0.1.0",
+    "gulp": "^3.9.0",
+    "gulp-shell": "^0.4.2",
+    "line-numbers": "^0.2.0",
+    "mocha": "^2.2.5",
+    "pegjs": "git://github.com/pegjs/pegjs.git#317059760a9e2ddbe89af1b24f8c7d916cecf4d3"
+  },
+  "directories": {
+    "doc": "doc",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/seanchas116/konomi.git"
+  },
+  "bugs": {
+    "url": "https://github.com/seanchas116/konomi/issues"
+  },
+  "homepage": "https://github.com/seanchas116/konomi#readme",
+  "dependencies": {
+    "source-map": "^0.4.4"
+  }
+}

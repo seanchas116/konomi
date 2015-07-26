@@ -1,5 +1,5 @@
-import Component from "../src/component/Component";
-import "../src/compiler/register";
+import {Component} from "konomi";
+import "../src/register";
 import {assert} from "chai";
 
 describe("TodoList component", () => {
