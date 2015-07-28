@@ -1,24 +1,6 @@
 import EventEmitter from "./EventEmitter";
 import * as property from "./property";
 
-class Connection {
-  constructor(...args) {
-    [this.sender, this.eventName, this.receiver, this.action] = args;
-
-    this.sender.on(this.eventName, this.action);
-
-    this.sender[sConnections].add(this);
-    this.receiver[sConnections].add(this);
-  }
-
-  dispose() {
-    this.sender[sConnections].delete(this);
-    this.receiver[sConnections].delete(this);
-
-    this.sender.removeListener(this.eventName, this.action);
-  }
-}
-
 export default
 class Component extends EventEmitter {
 
