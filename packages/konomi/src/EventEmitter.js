@@ -24,7 +24,7 @@ class EventEmitter {
   prependOn(event, action) {
     const map = this[sListenersMap];
     const listeners = (map[event] = map[event] || []);
-    listeners.shift(action);
+    listeners.unshift(action);
 
     const dispose = () => {
       const i = listeners.indexOf(action);

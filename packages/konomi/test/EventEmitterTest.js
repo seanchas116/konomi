@@ -3,29 +3,61 @@ import EventEmitter from "../src/EventEmitter";
 
 describe("EventEmitter", () => {
 
-  describe("#on", () => {
-    const emitter = new EventEmitter();
-    let received;
+  let emitter, received, onReceive, doNothing;
 
-    const onReceive = (...args) => {
+  beforeEach(() => {
+    emitter = new EventEmitter();
+    received = false;
+    onReceive = (...args) => {
       received = args;
     };
-    const doNothing = () => {};
+    doNothing = () => {};
+  });
 
-    const subscription = emitter.on("hoge", onReceive);
-    emitter.on(doNothing);
+  describe("#on", () => {
+    let subscription;
 
-    emitter.emit("hoge", 1, 2);
+    beforeEach(() => {
+      subscription = emitter.on("hoge", onReceive);
+      emitter.on("hoge", doNothing);
 
-    it("adds listener and return disposable", () => {
+      emitter.emit("hoge", 1, 2);
+    });
+
+    it("adds listener", () => {
       assert.deepEqual(received, [1,2]);
     });
 
     it("adds listener at the end of listeners", () => {
-      assert(emitter.listeners("hoge").indexOf(onReceive) === 0);
+      assert.deepEqual(emitter.listeners("hoge"), [onReceive, doNothing]);
     });
 
-    it("return disposable", () => {
+    it("returns disposable", () => {
+      subscription.dispose();
+      emitter.emit("hoge", 3, 4);
+      assert.deepEqual(received, [1,2]);
+    });
+  });
+
+  describe("#prependOn", () => {
+    let subscription;
+
+    beforeEach(() => {
+      subscription = emitter.prependOn("hoge", onReceive);
+      emitter.prependOn("hoge", doNothing);
+
+      emitter.emit("hoge", 1, 2);
+    });
+
+    it("adds listener", () => {
+      assert.deepEqual(received, [1,2]);
+    });
+
+    it("adds listener at the end of listeners", () => {
+      assert.deepEqual(emitter.listeners("hoge"), [doNothing, onReceive]);
+    });
+
+    it("returns disposable", () => {
       subscription.dispose();
       emitter.emit("hoge", 3, 4);
       assert.deepEqual(received, [1,2]);
