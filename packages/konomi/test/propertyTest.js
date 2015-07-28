@@ -4,10 +4,14 @@ import * as property from "../src/property";
 
 describe("property", () => {
   describe(".bind", () => {
-    const c1 = new Component();
-    property.define(c1, "p1");
-    const c2 = new Component();
-    property.bind(c2, "p2", [[c1, "p1"]], () => c1.p1 * 2);
+    let c1, c2;
+
+    beforeEach(() => {
+      c1 = new Component();
+      property.define(c1, "p1");
+      c2 = new Component();
+      property.bind(c2, "p2", [[c1, "p1"]], () => c1.p1 * 2);
+    });
 
     it("binds a property", () => {
       c1.p1 = 123;
