@@ -2,7 +2,8 @@ import {EventEmitter} from "events";
 
 export default
 class ObservableArray extends EventEmitter {
-  constructor(xs) {
+  constructor(xs = []) {
+    super();
     this.xs = Array.from(xs);
   }
 
@@ -36,13 +37,18 @@ class ObservableArray extends EventEmitter {
     return this.splice(0, 1)[0];
   }
   splice(index, howMany, ...elements) {
-    // remove
-    const removed = this.xs.splice(index, howMany);
-    this.emit("remove", removed);
+    let removed;
+    if (howMany > 0) {
+      // remove
+      removed = this.xs.splice(index, howMany);
+      this.emit("remove", index, removed);
+    } else {
+      removed = [];
+    }
 
     // insert
     this.xs.splice(index, 0, ...elements);
-    this.emit("insert", elements);
+    this.emit("insert", index, elements);
 
     return removed;
   }
