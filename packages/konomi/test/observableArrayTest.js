@@ -2,9 +2,8 @@ import assert from "power-assert";
 import ObservableArray from "../src/ObservableArray";
 
 describe("ObservableArray", () => {
-  const array = new ObservableArray([1,2,3]);
 
-  function assertChange(insertionsExpected, removalsExpected, action) {
+  function assertChange(array, insertionsExpected, removalsExpected, action) {
     const insertions = [];
     const removals = [];
     const onInsert = (i, xs) => {
@@ -28,7 +27,10 @@ describe("ObservableArray", () => {
 
   describe("#push", () => {
     it("pushes value", () => {
+      const array = new ObservableArray([1,2,3]);
+
       assertChange(
+        array,
         [[3,[4,5]]],
         [],
         () => {
@@ -36,6 +38,22 @@ describe("ObservableArray", () => {
         }
       )
       assert.deepEqual([...array], [1,2,3,4,5])
+    });
+  });
+  describe("#pop", () => {
+    it("pops value", () => {
+      const array = new ObservableArray([1,2,3]);
+
+      let popped;
+      assertChange(
+        array,
+        [],
+        [[2, [3]]],
+        () => {
+          popped = array.pop();
+        }
+      )
+      assert(popped === 3);
     });
   });
 });

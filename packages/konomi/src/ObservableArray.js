@@ -46,9 +46,11 @@ class ObservableArray extends EventEmitter {
       removed = [];
     }
 
-    // insert
-    this.xs.splice(index, 0, ...elements);
-    this.emit("insert", index, elements);
+    if (elements.length > 0) {
+      // insert
+      this.xs.splice(index, 0, ...elements);
+      this.emit("insert", index, elements);
+    }
 
     return removed;
   }
