@@ -1,6 +1,5 @@
 import EventEmitter from "./EventEmitter";
-
-const sConnections = Symbol("connections");
+import * as property from "./property";
 
 class Connection {
   constructor(...args) {
@@ -25,76 +24,34 @@ class Component extends EventEmitter {
 
   constructor() {
     super();
-    this[sConnections] = new Set();
+    this.changes = new EventEmitter();
+    this.disposables = new Set();
 
-    this.on("change:children", function () {
+    this.onChange("children", function () {
       for (const c in root.children) {
         c.parent = this;
       }
     });
-
-    this.emit("link");
   }
 
   dispose() {
-    this.emit("unlink");
-    for (const c of Array.from(this[sConnections])) {
-      c.dispose();
+    const disposables = Array.from(this.disposables);
+    for (let i = disposables.length - 1; i >= 0; --i) {
+      disposables[i].dispose();
     }
   }
 
-  connect(eventName, receiver, action) {
-    new Connection(this, eventName, receiver, action);
+  onChange(propName, action) {
+    return this.changes.on(propName, action);
   }
 
-  prependListener(event, listener) {
-    const oldListeners = this.listeners(event) || [];
-    this.removeAllListeners(event);
-    const ret = this.on(event, listener);
-    for (const l of oldListeners) {
-      this.on(event, l);
-    }
-    return ret;
-  }
-
-  bindProperty(name, deps, expr) {
-    if (!(name in this)) {
-      Component.addProperty(this, name);
-    }
-
-    const update = () => {
-      this.name = expr;
-    }
-
-    for (const [depObj, depName] of deps) {
-      depObj.connect(`change:${depName}`, this, update);
-    }
-    update();
+  emitChange(propName, value, old) {
+    this.changes.emit(propName, value, old);
   }
 
   get children() {
     return [];
   }
-
-  // TODO: use decorators?
-  static addProperty(name) {
-    const sName = Symbol(name);
-    const eventName = `change:${name}`;
-
-    Object.defineProperty(this.prototype, name, {
-      enumerable: true,
-      get() {
-        return this[sName];
-      },
-      set(value) {
-        if (this[sName] !== value) {
-          this[privateName] = value;
-          this.emit(eventName, value);
-        }
-      }
-    });
-    return this;
-  }
 }
 
-Component.addProperty("parent");
+property.define(Component.prototype, "parent");

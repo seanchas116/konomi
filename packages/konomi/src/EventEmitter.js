@@ -40,6 +40,6 @@ class EventEmitter {
   }
 
   emit(event, ...args) {
-    this[sListenersMap][event].forEach(l => l(...args));
+    this.listeners(event).forEach(l => l(...args));
   }
 }
